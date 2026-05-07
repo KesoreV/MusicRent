@@ -13,14 +13,12 @@
   ].join(';');
   document.body.appendChild(ripple);
 
-  /* ── Анимация появления страницы ── */
+  /* ── Анимация появления страницы (только opacity — transform ломает position:fixed) ── */
   document.body.style.opacity = '0';
-  document.body.style.transform = 'translateY(6px)';
-  document.body.style.transition = 'opacity .35s ease, transform .35s ease';
+  document.body.style.transition = 'opacity .38s ease';
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
       document.body.style.opacity = '1';
-      document.body.style.transform = 'translateY(0)';
     });
   });
 
