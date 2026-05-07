@@ -19,6 +19,17 @@
       <a class="nav-item active" href="index.html">Главная</a>
       <a class="nav-item" href="catalog.html">Каталог</a>
       <a class="nav-item" href="#faq">FAQ</a>
+            <div class="nav-dropdown" id="navDropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDrop()">
+          Информация <span class="nav-dropdown-arrow">▼</span>
+        </button>
+        <div class="nav-dropdown-menu">
+          <a class="nav-dropdown-item" href="#how"><span class="dd-ico">🔍</span>Как это работает</a>
+          <a class="nav-dropdown-item" href="#reviews"><span class="dd-ico">⭐</span>Отзывы клиентов</a>
+          <div class="nav-dropdown-divider"></div>
+          <a class="nav-dropdown-item" href="#faq"><span class="dd-ico">❓</span>FAQ</a>
+        </div>
+      </div>
       <a class="nav-item" href="#contacts">Контакты</a>
     </div>
     <div class="nav-right">
@@ -36,6 +47,8 @@
 <div class="mobile-nav" id="mobileNav">
   <a class="nav-item active" href="index.html">Главная</a>
   <a class="nav-item" href="catalog.html">Каталог</a>
+  <a class="nav-item" href="#how">Как это работает</a>
+  <a class="nav-item" href="#reviews">Отзывы</a>
   <a class="nav-item" href="#faq">FAQ</a>
   <a class="nav-item" href="#contacts">Контакты</a>
   <div class="mobile-nav-auth" id="mobileNavAuth"></div>
@@ -624,6 +637,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+</script>
+<script>
+function toggleNavDrop() {
+  var d = document.getElementById('navDropdown');
+  if (!d) return;
+  var open = d.classList.toggle('open');
+  if (open) {
+    setTimeout(function() {
+      document.addEventListener('click', function closeDrop(e) {
+        if (!d.contains(e.target)) { d.classList.remove('open'); document.removeEventListener('click', closeDrop); }
+      });
+    }, 0);
+  }
+}
 </script>
 </body>
 </html>

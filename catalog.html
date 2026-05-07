@@ -47,6 +47,17 @@
     <div class="nav-menu">
       <a class="nav-item" href="index.html">Главная</a>
       <a class="nav-item active" href="catalog.html">Каталог</a>
+            <div class="nav-dropdown" id="navDropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDrop()">
+          Информация <span class="nav-dropdown-arrow">▼</span>
+        </button>
+        <div class="nav-dropdown-menu">
+          <a class="nav-dropdown-item" href="index.html#how"><span class="dd-ico">🔍</span>Как это работает</a>
+          <a class="nav-dropdown-item" href="index.html#reviews"><span class="dd-ico">⭐</span>Отзывы клиентов</a>
+          <div class="nav-dropdown-divider"></div>
+          <a class="nav-dropdown-item" href="index.html#faq"><span class="dd-ico">❓</span>FAQ</a>
+        </div>
+      </div>
       <a class="nav-item" href="index.html#contacts">Контакты</a>
     </div>
     <div class="nav-right">
@@ -66,7 +77,18 @@
 <div class="mobile-nav" id="mobileNav">
   <a class="nav-item" href="index.html">Главная</a>
   <a class="nav-item active" href="catalog.html">Каталог</a>
-  <a class="nav-item" href="index.html#contacts">Контакты</a>
+        <div class="nav-dropdown" id="navDropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDrop()">
+          Информация <span class="nav-dropdown-arrow">▼</span>
+        </button>
+        <div class="nav-dropdown-menu">
+          <a class="nav-dropdown-item" href="index.html#how"><span class="dd-ico">🔍</span>Как это работает</a>
+          <a class="nav-dropdown-item" href="index.html#reviews"><span class="dd-ico">⭐</span>Отзывы клиентов</a>
+          <div class="nav-dropdown-divider"></div>
+          <a class="nav-dropdown-item" href="index.html#faq"><span class="dd-ico">❓</span>FAQ</a>
+        </div>
+      </div>
+      <a class="nav-item" href="index.html#contacts">Контакты</a>
   <div class="mobile-nav-search">
     <span>🔍</span>
     <input id="searchInputMobile" class="nav-search-input" placeholder="Поиск...">
@@ -1211,6 +1233,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     initFavorites();
   } catch(e) { console.log('Admin equipment load:', e); }
 });
+</script>
+<script>
+function toggleNavDrop() {
+  var d = document.getElementById('navDropdown');
+  if (!d) return;
+  var open = d.classList.toggle('open');
+  if (open) {
+    setTimeout(function() {
+      document.addEventListener('click', function closeDrop(e) {
+        if (!d.contains(e.target)) { d.classList.remove('open'); document.removeEventListener('click', closeDrop); }
+      });
+    }, 0);
+  }
+}
 </script>
 </body>
 </html>
