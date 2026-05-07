@@ -1,0 +1,520 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профиль — MusicRent</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .profile-wrap{max-width:960px;margin:0 auto;padding:28px 24px;display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start}
+    .profile-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;position:sticky;top:80px}
+    .profile-card-top{background:linear-gradient(150deg,#162030,#1a3050);padding:28px 20px;text-align:center}
+    .profile-ava{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#818cf8);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;margin:0 auto 12px;border:3px solid rgba(255,255,255,.12)}
+    .profile-name{font-size:1.05rem;font-weight:700;margin-bottom:4px}
+    .profile-email{font-size:.8rem;color:var(--text-muted)}
+    .profile-role{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;background:var(--accent-dim);color:#93c5fd;border:1px solid rgba(59,130,246,.3)}
+    .profile-nav{padding:10px 0}
+    .profile-nav-item{display:flex;align-items:center;gap:10px;padding:11px 18px;cursor:pointer;color:var(--text-muted);font-size:.88rem;transition:all .15s;border-left:2px solid transparent}
+    .profile-nav-item:hover{color:var(--text);background:rgba(255,255,255,.03)}
+    .profile-nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);font-weight:600}
+    .profile-nav-item .ico{width:20px;text-align:center}
+    .profile-main{display:flex;flex-direction:column;gap:20px}
+    .profile-section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden}
+    .profile-section-hd{padding:16px 20px;border-bottom:1px solid var(--border);font-weight:700;font-size:.95rem;display:flex;align-items:center;justify-content:space-between}
+    .profile-section-body{padding:20px}
+    .profile-tab{display:none}
+    .profile-tab.active{display:block}
+    /* Orders table */
+    .orders-list{display:flex;flex-direction:column;gap:14px}
+    .order-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .order-card-hd{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+    .order-num{font-weight:700;font-size:.9rem}
+    .order-date{font-size:.78rem;color:var(--text-dim)}
+    .order-status{padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700}
+    .order-total{font-weight:800;color:var(--accent);font-size:.95rem}
+    .order-items{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+    .order-item-row{display:flex;align-items:center;gap:10px;font-size:.85rem}
+    .order-item-emoji{width:32px;height:32px;border-radius:var(--r);background:linear-gradient(135deg,#162030,#1a2d42);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+    .order-item-name{flex:1;color:var(--text);font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .order-item-detail{color:var(--text-dim);font-size:.78rem;white-space:nowrap}
+    /* edit form */
+    .edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .edit-success{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;padding:9px 13px;border-radius:var(--r);font-size:.83rem;display:none}
+    .edit-error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;padding:9px 13px;border-radius:var(--r);font-size:.83rem;display:none}
+    /* responsive */
+    @media(max-width:768px){
+      .profile-wrap{grid-template-columns:1fr;padding:16px}
+      .profile-card{position:static}
+      .profile-card-top{padding:20px 16px}
+      .edit-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="nav-logo" href="index.html">
+      <div class="logo-box">🎸</div>
+      MusicRent
+    </a>
+    <div class="nav-menu">
+      <a class="nav-item" href="index.html">Главная</a>
+      <a class="nav-item" href="catalog.html">Каталог</a>
+      <a class="nav-item" href="index.html#how">Как это работает</a>
+      <a class="nav-item" href="index.html#reviews">Отзывы</a>
+      <a class="nav-item" href="index.html#contacts">Контакты</a>
+    </div>
+    <div class="nav-right">
+      <div class="cart-btn" title="Корзина" onclick="openCart()">
+        🛒<span class="cart-count"></span>
+      </div>
+      <!-- auth.js dynamically inserts login/user buttons here -->
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+<!-- MOBILE NAV DRAWER -->
+<div class="mobile-nav" id="mobileNav">
+  <a class="nav-item" href="index.html">Главная</a>
+  <a class="nav-item" href="catalog.html">Каталог</a>
+  <a class="nav-item" href="index.html#how">Как это работает</a>
+  <a class="nav-item" href="index.html#reviews">Отзывы</a>
+  <a class="nav-item" href="index.html#contacts">Контакты</a>
+  <div class="mobile-nav-auth" id="mobileNavAuth"></div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Главная</a><span>/</span>
+      <span style="color:var(--text-muted)">Профиль</span>
+    </div>
+    <div class="page-title">Мой профиль</div>
+  </div>
+</div>
+
+<!-- PROFILE WRAP -->
+<div class="profile-wrap">
+
+  <!-- LEFT CARD -->
+  <div class="profile-card">
+    <div class="profile-card-top">
+      <div class="profile-ava" id="profileAva">?</div>
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-email" id="profileEmail">—</div>
+      <div class="profile-role" id="profileRole">Клиент</div>
+    </div>
+    <div class="profile-nav">
+      <div class="profile-nav-item active" onclick="showTab('orders')" id="navOrders">
+        <span class="ico">📦</span> История заказов
+      </div>
+      <div class="profile-nav-item" onclick="showTab('info')" id="navInfo">
+        <span class="ico">👤</span> Мои данные
+      </div>
+      <div class="profile-nav-item" onclick="showTab('pwd')" id="navPwd">
+        <span class="ico">🔒</span> Сменить пароль
+      </div>
+      <div class="profile-nav-item" onclick="showTab('favs')" id="navFavs">
+        <span class="ico">♥</span> Избранное
+      </div>
+      <div style="padding:10px 18px 4px;border-top:1px solid var(--border);margin-top:4px">
+        <button onclick="logoutUser()" class="btn btn-ghost" style="width:100%;justify-content:center;font-size:.85rem;color:var(--danger)">
+          Выйти из аккаунта
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT MAIN -->
+  <div class="profile-main">
+
+    <!-- TAB: Orders -->
+    <div class="profile-tab active" id="tabOrders">
+      <div class="profile-section">
+        <div class="profile-section-hd">
+          История заказов
+          <span id="ordersCount" style="font-size:.78rem;color:var(--text-dim);font-weight:400"></span>
+        </div>
+        <div class="profile-section-body">
+          <div class="orders-list" id="ordersList">
+            <div style="text-align:center;padding:32px;color:var(--text-muted)">
+              <div style="font-size:2.5rem;margin-bottom:10px">📦</div>
+              <div style="font-weight:700">Заказов пока нет</div>
+              <div style="font-size:.83rem;margin-top:4px">Перейдите в <a href="catalog.html" style="color:var(--accent)">каталог</a>, чтобы оформить первый заказ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Info -->
+    <div class="profile-tab" id="tabInfo">
+      <div class="profile-section">
+        <div class="profile-section-hd">Личные данные</div>
+        <div class="profile-section-body">
+          <form onsubmit="saveInfo(event)" style="display:flex;flex-direction:column;gap:14px">
+            <div class="edit-grid">
+              <div class="form-group">
+                <label class="form-label">Имя</label>
+                <input class="form-control" id="editFirstName" placeholder="Иван" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Фамилия</label>
+                <input class="form-control" id="editLastName" placeholder="Иванов">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-control" id="editEmail" type="email" placeholder="your@email.com" readonly style="opacity:.6;cursor:not-allowed">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Телефон</label>
+              <input class="form-control" id="editPhone" type="tel" placeholder="+7 (___) ___-__-__">
+            </div>
+            <div id="infoSuccess" class="edit-success">Данные успешно сохранены</div>
+            <div id="infoError"   class="edit-error"></div>
+            <div>
+              <button class="btn btn-primary" type="submit">Сохранить изменения</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Password -->
+    <div class="profile-tab" id="tabPwd">
+      <div class="profile-section">
+        <div class="profile-section-hd">Смена пароля</div>
+        <div class="profile-section-body">
+          <form onsubmit="changePassword(event)" style="display:flex;flex-direction:column;gap:14px;max-width:400px">
+            <div class="form-group">
+              <label class="form-label">Текущий пароль</label>
+              <div style="position:relative">
+                <input class="form-control" id="pwdOld" type="password" placeholder="Текущий пароль" required>
+                <button type="button" onclick="togglePwdField('pwdOld')" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.85rem">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Новый пароль</label>
+              <div style="position:relative">
+                <input class="form-control" id="pwdNew" type="password" placeholder="Минимум 4 символа" required>
+                <button type="button" onclick="togglePwdField('pwdNew')" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.85rem">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Подтвердите новый пароль</label>
+              <input class="form-control" id="pwdConfirm" type="password" placeholder="Повторите пароль" required>
+            </div>
+            <div id="pwdSuccess" class="edit-success">Пароль успешно изменён</div>
+            <div id="pwdError"   class="edit-error"></div>
+            <div>
+              <button class="btn btn-primary" type="submit">Сменить пароль</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Favorites -->
+    <div class="profile-tab" id="tabFavs">
+      <div class="profile-section">
+        <div class="profile-section-hd">Избранное</div>
+        <div class="profile-section-body">
+          <div id="favsList"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="overlay" id="cartModal">
+  <div class="modal cart-modal">
+    <div class="modal-hd">
+      <div class="modal-hd-title">🛒 Корзина</div>
+      <button class="modal-x" onclick="closeCart()">✕</button>
+    </div>
+    <div id="cartBody" class="cart-body"></div>
+    <div id="cartFooter" class="cart-footer" style="display:none">
+      <div class="cart-total-row"><span>Итого:</span><span id="cartTotal" class="cart-total-val">0 ₽</span></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="checkoutCart()">Оформить заказ</button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:6px;font-size:.82rem" onclick="clearCart()">Очистить корзину</button>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="data.js"></script>
+<script src="db.js"></script>
+<script src="auth.js"></script>
+<script src="cart.js"></script>
+<script src="cursor.js"></script>
+<script src="modals.js"></script>
+
+<script>
+/* ───────────────────────────────────────────────
+   Redirect if not logged in
+─────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', async () => {
+  if (window.authReady) await window.authReady;
+  if (!isLoggedIn()) {
+    window.location.href = 'login.html';
+    return;
+  }
+  initProfile();
+  loadOrders();
+  loadFavs();
+});
+
+/* ───────────────────────────────────────────────
+   Fill profile sidebar
+─────────────────────────────────────────────── */
+function initProfile() {
+  const u = getCurrentUser();
+  if (!u) return;
+
+  const initials = (u.firstName ? u.firstName[0] : '') + (u.lastName ? u.lastName[0] : '');
+  document.getElementById('profileAva').textContent   = initials || '?';
+  document.getElementById('profileName').textContent  = u.firstName + (u.lastName ? ' ' + u.lastName : '');
+  document.getElementById('profileEmail').textContent = u.email;
+  document.getElementById('profileRole').textContent  = u.role === 'admin' ? 'Администратор' : 'Клиент';
+
+  // fill edit form
+  document.getElementById('editFirstName').value = u.firstName || '';
+  document.getElementById('editLastName').value  = u.lastName  || '';
+  document.getElementById('editEmail').value     = u.email     || '';
+  document.getElementById('editPhone').value     = u.phone     || '';
+}
+
+/* ───────────────────────────────────────────────
+   Tab switching
+─────────────────────────────────────────────── */
+function showTab(name) {
+  ['orders','info','pwd','favs'].forEach(t => {
+    document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
+    document.getElementById('nav' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
+  });
+  document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  document.getElementById('nav' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+}
+
+/* ───────────────────────────────────────────────
+   Orders
+─────────────────────────────────────────────── */
+const STATUS_LABEL = { pending:'Ожидает подтверждения', confirmed:'Подтверждён', active:'В аренде', completed:'Завершён', cancelled:'Отменён' };
+const STATUS_CLASS = { pending:'b-yellow', confirmed:'b-blue', active:'b-green', completed:'b-gray', cancelled:'b-red' };
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('ru', { day:'numeric', month:'long', year:'numeric' });
+}
+
+function fmtPrice(n) { return Number(n).toLocaleString('ru') + ' ₽'; }
+function dayWord(n)  { if(n===1)return'день'; if(n>=2&&n<=4)return'дня'; return'дней'; }
+
+async function loadOrders() {
+  const list = document.getElementById('ordersList');
+  const cnt  = document.getElementById('ordersCount');
+  const u    = getCurrentUser();
+
+  let orders = [];
+  try {
+    const all = await dbGetAllByIndex('orders', 'userEmail', u.email);
+    orders = all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } catch {}
+
+  cnt.textContent = orders.length ? `${orders.length} заказ${orders.length===1?'':'ов'}` : '';
+
+  if (!orders.length) {
+    list.innerHTML = `
+      <div style="text-align:center;padding:32px;color:var(--text-muted)">
+        <div style="font-size:2.5rem;margin-bottom:10px">📦</div>
+        <div style="font-weight:700">Заказов пока нет</div>
+        <div style="font-size:.83rem;margin-top:4px">Перейдите в <a href="catalog.html" style="color:var(--accent)">каталог</a>, чтобы оформить первый заказ</div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = orders.map(o => {
+    const status = o.status || 'pending';
+    const items  = Array.isArray(o.items) ? o.items : [];
+    return `
+    <div class="order-card">
+      <div class="order-card-hd">
+        <div>
+          <span class="order-num">Заказ #${o.id}</span>
+          <span class="order-date" style="margin-left:10px">${fmtDate(o.createdAt)}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="badge ${STATUS_CLASS[status]}">${STATUS_LABEL[status]}</span>
+          <span class="order-total">${fmtPrice(o.total)}</span>
+        </div>
+      </div>
+      <div class="order-items">
+        ${items.map(item => `
+          <div class="order-item-row">
+            <div class="order-item-emoji">${item.emoji || '🎵'}</div>
+            <div class="order-item-name">${item.name}</div>
+            <div class="order-item-detail">${item.days} ${dayWord(item.days)} × ${item.qty} шт.</div>
+            <div class="order-item-detail" style="color:var(--accent);font-weight:700">${fmtPrice((item.days>=2?item.price2:item.price1)*item.days*item.qty)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ───────────────────────────────────────────────
+   Save info
+─────────────────────────────────────────────── */
+async function saveInfo(e) {
+  e.preventDefault();
+  const successEl = document.getElementById('infoSuccess');
+  const errorEl   = document.getElementById('infoError');
+  successEl.style.display = 'none';
+  errorEl.style.display   = 'none';
+
+  const firstName = document.getElementById('editFirstName').value.trim();
+  const lastName  = document.getElementById('editLastName').value.trim();
+  const phone     = document.getElementById('editPhone').value.trim();
+
+  try {
+    const u = getCurrentUser();
+    const updated = await dbUpdateUser(u.id, { firstName, lastName, phone });
+    if (!updated) throw new Error('not found');
+    setSession(updated);
+    initProfile();
+    successEl.style.display = '';
+    setTimeout(() => successEl.style.display = 'none', 3000);
+  } catch {
+    errorEl.textContent = 'Ошибка сохранения данных';
+    errorEl.style.display = '';
+  }
+}
+
+/* ───────────────────────────────────────────────
+   Change password
+─────────────────────────────────────────────── */
+async function changePassword(e) {
+  e.preventDefault();
+  const successEl = document.getElementById('pwdSuccess');
+  const errorEl   = document.getElementById('pwdError');
+  successEl.style.display = 'none';
+  errorEl.style.display   = 'none';
+
+  const oldPwd  = document.getElementById('pwdOld').value;
+  const newPwd  = document.getElementById('pwdNew').value;
+  const confirm = document.getElementById('pwdConfirm').value;
+
+  if (newPwd.length < 4) {
+    errorEl.textContent = 'Новый пароль должен быть не менее 4 символов';
+    errorEl.style.display = '';
+    return;
+  }
+  if (newPwd !== confirm) {
+    errorEl.textContent = 'Пароли не совпадают';
+    errorEl.style.display = '';
+    return;
+  }
+
+  try {
+    const u    = getCurrentUser();
+    const full = await dbGet('users', u.id);
+    if (!full || full.password !== oldPwd) {
+      errorEl.textContent = 'Текущий пароль введён неверно';
+      errorEl.style.display = '';
+      return;
+    }
+    await dbUpdateUser(u.id, { password: newPwd });
+    document.getElementById('pwdOld').value     = '';
+    document.getElementById('pwdNew').value     = '';
+    document.getElementById('pwdConfirm').value = '';
+    successEl.style.display = '';
+    setTimeout(() => successEl.style.display = 'none', 3000);
+  } catch {
+    errorEl.textContent = 'Ошибка смены пароля';
+    errorEl.style.display = '';
+  }
+}
+
+/* ───────────────────────────────────────────────
+   Favorites — с реальными данными из PRODUCTS
+─────────────────────────────────────────────── */
+async function loadFavs() {
+  const favIds = JSON.parse(localStorage.getItem('mr_favs') || '[]');
+  const el = document.getElementById('favsList');
+
+  if (!favIds.length) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <span class="icon">♡</span>
+        <h3>Избранное пусто</h3>
+        <p>Нажмите ♡ на карточке товара, чтобы добавить в избранное</p>
+      </div>`;
+    return;
+  }
+
+  /* Собираем данные о товарах */
+  const items = await Promise.all(favIds.map(async id => {
+    /* 1. сначала пробуем DB */
+    try {
+      const dbItem = await dbGetEquipment(id);
+      if (dbItem) return { id, ...dbItem };
+    } catch {}
+    /* 2. fallback — статический каталог */
+    if (typeof PRODUCTS !== 'undefined' && PRODUCTS[id]) {
+      return { id, ...PRODUCTS[id] };
+    }
+    return { id, name: id, emoji: '🎵', price1: 0, avail: 'free', category: '' };
+  }));
+
+  el.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${items.map(p => `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg-surface);border:1.5px solid var(--border);border-radius:var(--r-lg);transition:var(--transition)"
+             onmouseover="this.style.borderColor='var(--accent)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+          <a href="item.html?id=${p.id}" style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-decoration:none">
+            <div style="width:52px;height:52px;border-radius:var(--r);background:linear-gradient(135deg,#162030,#1a2d42);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;position:relative;overflow:hidden">
+              ${p.image ? `<img src="${p.image}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">` : ''}
+              ${p.emoji || '🎵'}
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:.9rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name || p.id}</div>
+              <div style="font-size:.75rem;color:var(--text-muted);margin-top:2px">${p.category || ''}</div>
+              ${p.price1 ? `<div style="font-size:.8rem;color:var(--accent);font-weight:700;margin-top:3px">от ${Number(p.price1).toLocaleString('ru')} ₽/сут</div>` : ''}
+            </div>
+          </a>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            <span class="badge ${p.avail==='free'?'b-green':p.avail==='booked'?'b-yellow':'b-red'}" style="font-size:.7rem">${p.avail==='free'?'Свободно':p.avail==='booked'?'Занято':'Недоступно'}</span>
+            <button onclick="removeFav('${p.id}')" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:1rem;padding:4px;line-height:1;transition:color .15s" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-dim)'" title="Удалить из избранного">✕</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function removeFav(id) {
+  const favs = JSON.parse(localStorage.getItem('mr_favs') || '[]');
+  const idx = favs.indexOf(id);
+  if (idx !== -1) favs.splice(idx, 1);
+  localStorage.setItem('mr_favs', JSON.stringify(favs));
+  loadFavs();
+}
+
+/* ───────────────────────────────────────────────
+   Helpers (need access to loadUsers/saveUsers from auth.js)
+─────────────────────────────────────────────── */
+function togglePwdField(id) {
+  const i = document.getElementById(id);
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+</script>
+</body>
+</html>

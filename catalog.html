@@ -1,0 +1,1220 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог оборудования — MusicRent</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Catalog-page overrides ── */
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .cat-section { margin-bottom: 36px; }
+    .cat-section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+    .cat-section-title .icon { font-size: 1.2rem; }
+    .cat-section-title .cnt {
+      margin-left: auto;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      background: rgba(255,255,255,.05);
+      padding: 2px 10px;
+      border-radius: 999px;
+    }
+    .cat-section[data-hidden="true"] { display: none; }
+    .product-card[data-hidden="true"] { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="nav-logo" href="index.html">
+      <div class="logo-box">🎸</div>
+      MusicRent
+    </a>
+    <div class="nav-menu">
+      <a class="nav-item" href="index.html">Главная</a>
+      <a class="nav-item active" href="catalog.html">Каталог</a>
+      <a class="nav-item" href="index.html#how">Как это работает</a>
+      <a class="nav-item" href="index.html#reviews">Отзывы</a>
+      <a class="nav-item" href="index.html#contacts">Контакты</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search">
+        <span style="color:var(--text-dim);font-size:.9rem">🔍</span>
+        <input id="searchInput" class="nav-search-input" placeholder="Поиск оборудования...">
+      </div>
+      <div class="cart-btn" onclick="openCart()">🛒<span class="cart-count"></span></div>
+      <!-- auth.js dynamically inserts login/user buttons here -->
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+<!-- MOBILE NAV DRAWER -->
+<div class="mobile-nav" id="mobileNav">
+  <a class="nav-item" href="index.html">Главная</a>
+  <a class="nav-item active" href="catalog.html">Каталог</a>
+  <a class="nav-item" href="index.html#how">Как это работает</a>
+  <a class="nav-item" href="index.html#reviews">Отзывы</a>
+  <a class="nav-item" href="index.html#contacts">Контакты</a>
+  <div class="mobile-nav-search">
+    <span>🔍</span>
+    <input id="searchInputMobile" class="nav-search-input" placeholder="Поиск...">
+  </div>
+  <div class="mobile-nav-auth" id="mobileNavAuth"></div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Главная</a><span>/</span>
+      <span style="color:var(--text-muted)">Каталог</span>
+    </div>
+    <div class="page-title">Аренда музыкального оборудования</div>
+    <div class="page-count" id="resultsCount">Показано 20 из 247 позиций</div>
+  </div>
+</div>
+
+<!-- CATALOG LAYOUT -->
+<div class="catalog-wrap">
+
+  <!-- ═══════════════════════════════
+       SIDEBAR
+  ════════════════════════════════ -->
+  <!-- Mobile filter toggle -->
+  <button class="sidebar-mobile-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+    <span>🔧 Фильтры и категории</span>
+    <span class="sidebar-toggle-arrow">▼</span>
+  </button>
+
+  <aside class="sidebar" id="catalogSidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">Категории</div>
+      <div class="sidebar-tree">
+        <div class="tree-item">
+          <div class="tree-link active" data-filter-cat="all" onclick="filterCat(this,'all')">
+            🎵 Все категории <span class="count">247</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="guitars" onclick="filterCat(this,'guitars')">
+            🎸 Гитары <span class="count">48</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="drums" onclick="filterCat(this,'drums')">
+            🥁 Ударные <span class="count">22</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="keys" onclick="filterCat(this,'keys')">
+            🎹 Клавишные <span class="count">31</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="amps" onclick="filterCat(this,'amps')">
+            🔊 Усилители <span class="count">36</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="mics" onclick="filterCat(this,'mics')">
+            🎤 Микрофоны <span class="count">29</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="light" onclick="filterCat(this,'light')">
+            💡 Световое <span class="count">14</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="dj" onclick="filterCat(this,'dj')">
+            🎛️ DJ-оборудование <span class="count">20</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="brass" onclick="filterCat(this,'brass')">
+            🎺 Духовые <span class="count">17</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="speakers" onclick="filterCat(this,'speakers')">
+            🔉 Акустические системы <span class="count">18</span>
+          </div>
+        </div>
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="audio-if" onclick="filterCat(this,'audio-if')">
+            🎚️ Звуковые карты <span class="count">12</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Availability -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">Наличие</div>
+      <div class="sidebar-filter">
+        <div class="filter-opts">
+          <label class="filter-opt">
+            <input type="checkbox" id="avail-free" checked onchange="applyFilters()"> Свободно сейчас
+          </label>
+          <label class="filter-opt">
+            <input type="checkbox" id="avail-booked" onchange="applyFilters()"> Забронировано
+          </label>
+          <label class="filter-opt">
+            <input type="checkbox" id="avail-busy" onchange="applyFilters()"> В аренде
+          </label>
+          <label class="filter-opt">
+            <input type="checkbox" id="avail-service" onchange="applyFilters()"> На обслуживании
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">Цена за сутки (₽)</div>
+      <div class="sidebar-filter">
+        <input type="range" id="priceRange" min="0" max="2000" value="2000"
+               style="width:100%;accent-color:var(--accent);margin-bottom:6px"
+               oninput="document.getElementById('priceRangeVal').textContent=this.value;applyFilters()">
+        <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text-dim)">
+          <span>0 ₽</span><span>до <span id="priceRangeVal">2000</span> ₽</span>
+        </div>
+        <div class="price-inputs" style="margin-top:8px">
+          <input class="form-control" type="number" id="priceFrom" placeholder="От" value="0"
+                 style="font-size:.8rem" oninput="applyFilters()">
+          <input class="form-control" type="number" id="priceTo" placeholder="До" value="2000"
+                 style="font-size:.8rem" oninput="applyFilters()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Condition -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">Состояние</div>
+      <div class="sidebar-filter">
+        <div class="filter-opts">
+          <label class="filter-opt">
+            <input type="checkbox" class="cond-filter" value="new" checked onchange="applyFilters()"> Новое
+          </label>
+          <label class="filter-opt">
+            <input type="checkbox" class="cond-filter" value="excellent" checked onchange="applyFilters()"> Отличное
+          </label>
+          <label class="filter-opt">
+            <input type="checkbox" class="cond-filter" value="good" checked onchange="applyFilters()"> Хорошее
+          </label>
+          <label class="filter-opt">
+            <input type="checkbox" class="cond-filter" value="ok" onchange="applyFilters()"> Удовлетворительное
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:12px 14px">
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;font-size:.82rem" onclick="resetFilters()">
+        ✕ Сбросить все фильтры
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ═══════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════ -->
+  <div class="catalog-main">
+
+    <!-- Toolbar -->
+    <div class="catalog-toolbar">
+      <div class="toolbar-left">
+        <span id="shownCount" style="color:var(--text-muted);font-size:.85rem">Показано <strong style="color:var(--text)">20</strong> позиций</span>
+      </div>
+      <div class="toolbar-right">
+        <span style="font-size:.83rem;color:var(--text-muted)">Сортировка:</span>
+        <select class="sort-sel" onchange="applyFilters()">
+          <option value="default">По умолчанию</option>
+          <option value="price-asc">Цена: возрастание</option>
+          <option value="price-desc">Цена: убывание</option>
+          <option value="name-asc">По названию А–Я</option>
+        </select>
+        <div class="view-toggle">
+          <div class="view-btn active" id="btnGrid" onclick="setView('grid')" title="Сетка">⊞</div>
+          <div class="view-btn" id="btnList" onclick="setView('list')" title="Список">☰</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════ GRID VIEW ════════ -->
+    <div id="gridView">
+
+      <!-- ── ГИТАРЫ ── -->
+      <div class="cat-section" data-cat="guitars" id="sec-guitars">
+        <div class="cat-section-title">
+          <span class="icon">🎸</span> Гитары
+          <span class="cnt">48 позиций</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=gibson-les-paul" class="product-card"
+             data-cat="guitars" data-avail="free" data-cond="excellent" data-price="850" data-name="Gibson Les Paul Standard">
+            <div class="pc-img">
+              <img class="photo" src="images/gibson-les-paul.webp" alt="Gibson Les Paul Standard" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎸</div>
+              <div class="pc-badge"><span class="badge b-green">Свободна</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Gibson Les Paul Standard</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Электрогитара</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Звукосниматели</span><span class="pc-spec-val">2× Humbucker 490</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Отличное</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">850 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">720 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=fender-strat" class="product-card"
+             data-cat="guitars" data-avail="free" data-cond="good" data-price="750" data-name="Fender Stratocaster MIM">
+            <div class="pc-img">
+              <img class="photo" src="images/fender-strat.webp" alt="Fender Stratocaster MIM" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎸</div>
+              <div class="pc-badge"><span class="badge b-green">Свободна</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Fender Stratocaster MIM</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Электрогитара</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Звукосниматели</span><span class="pc-spec-val">3× Single-coil</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--warn)">Хорошее</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">750 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">630 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── УДАРНЫЕ ── -->
+      <div class="cat-section" data-cat="drums" id="sec-drums">
+        <div class="cat-section-title">
+          <span class="icon">🥁</span> Ударные установки
+          <span class="cnt">22 позиции</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=pearl-export" class="product-card"
+             data-cat="drums" data-avail="free" data-cond="new" data-price="1200" data-name="Pearl Export 5-Piece">
+            <div class="pc-img">
+              <img class="photo" src="images/pearl-export.webp" alt="Pearl Export 5-Piece" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🥁</div>
+              <div class="pc-badge"><span class="badge b-green">Свободна</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Pearl Export 5-Piece</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Акустическая установка</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Конфигурация</span><span class="pc-spec-val">5 барабанов + тарелки</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Новое</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">1 200 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">950 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=roland-td17" class="product-card"
+             data-cat="drums" data-avail="free" data-cond="excellent" data-price="900" data-name="Roland TD-17KVX">
+            <div class="pc-img">
+              <img class="photo" src="images/roland-td17.webp" alt="Roland TD-17KVX" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🥁</div>
+              <div class="pc-badge"><span class="badge b-green">Свободна</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Roland TD-17KVX</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Электронная установка</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Конфигурация</span><span class="pc-spec-val">5 пэдов, меш-пластики</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Отличное</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">900 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">760 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── КЛАВИШНЫЕ ── -->
+      <div class="cat-section" data-cat="keys" id="sec-keys">
+        <div class="cat-section-title">
+          <span class="icon">🎹</span> Клавишные
+          <span class="cnt">31 позиция</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=roland-juno" class="product-card"
+             data-cat="keys" data-avail="booked" data-cond="excellent" data-price="950" data-name="Roland JUNO-DS88">
+            <div class="pc-img">
+              <img class="photo" src="images/roland-juno.jpg" alt="Roland JUNO-DS88" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎹</div>
+              <div class="pc-badge"><span class="badge b-yellow">Забронирована</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Roland JUNO-DS88</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Синтезатор</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Клавиш</span><span class="pc-spec-val">88, взвешенные</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Отличное</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">950 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">800 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent" style="opacity:.5;cursor:not-allowed">Забронирована</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=yamaha-p125" class="product-card"
+             data-cat="keys" data-avail="free" data-cond="new" data-price="1100" data-name="Yamaha P-125">
+            <div class="pc-img">
+              <img class="photo" src="images/yamaha-p125.jpg" alt="Yamaha P-125" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎹</div>
+              <div class="pc-badge"><span class="badge b-green">Свободна</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Yamaha P-125</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Цифровое пианино</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Клавиш</span><span class="pc-spec-val">88, взвешенных GHC</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Новое</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">1 100 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">920 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── УСИЛИТЕЛИ ── -->
+      <div class="cat-section" data-cat="amps" id="sec-amps">
+        <div class="cat-section-title">
+          <span class="icon">🔊</span> Усилители
+          <span class="cnt">36 позиций</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=marshall-dsl" class="product-card"
+             data-cat="amps" data-avail="free" data-cond="good" data-price="700" data-name="Marshall DSL40CR">
+            <div class="pc-img">
+              <img class="photo" src="images/marshall-dsl.webp" alt="Marshall DSL40CR" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🔊</div>
+              <div class="pc-badge"><span class="badge b-green">Свободен</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Marshall DSL40CR</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Гитарный комбо</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Мощность</span><span class="pc-spec-val">40 Вт, ламповый</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--warn)">Хорошее</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">700 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">590 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=fender-twin" class="product-card"
+             data-cat="amps" data-avail="free" data-cond="excellent" data-price="1400" data-name="Fender Twin Reverb">
+            <div class="pc-img">
+              <img class="photo" src="images/fender-twin.webp" alt="Fender Twin Reverb" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🔊</div>
+              <div class="pc-badge"><span class="badge b-green">Свободен</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Fender Twin Reverb</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Гитарный комбо</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Мощность</span><span class="pc-spec-val">85 Вт, ламповый</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Отличное</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">1 400 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">1 180 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── МИКРОФОНЫ ── -->
+      <div class="cat-section" data-cat="mics" id="sec-mics">
+        <div class="cat-section-title">
+          <span class="icon">🎤</span> Микрофоны
+          <span class="cnt">29 позиций</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=shure-sm58" class="product-card"
+             data-cat="mics" data-avail="free" data-cond="excellent" data-price="350" data-name="Shure SM58 + Стойка">
+            <div class="pc-img">
+              <img class="photo" src="images/shure-sm58.webp" alt="Shure SM58 + Стойка" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎤</div>
+              <div class="pc-badge"><span class="badge b-green">Свободен</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Shure SM58 + Стойка</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Динамический вокальный</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Разъём</span><span class="pc-spec-val">XLR, кабель 6 м</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Отличное</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">350 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">290 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=rode-nt1a" class="product-card"
+             data-cat="mics" data-avail="free" data-cond="new" data-price="650" data-name="Rode NT1-A + интерфейс">
+            <div class="pc-img">
+              <img class="photo" src="images/rode-nt1a.jpg" alt="Rode NT1-A" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎤</div>
+              <div class="pc-badge"><span class="badge b-green">Свободен</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Rode NT1-A + интерфейс Focusrite</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Конденсаторный студийный</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Интерфейс</span><span class="pc-spec-val">Focusrite Scarlett Solo</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Новое</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">650 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">540 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── СВЕТОВОЕ ── -->
+      <div class="cat-section" data-cat="light" id="sec-light">
+        <div class="cat-section-title">
+          <span class="icon">💡</span> Световое оборудование
+          <span class="cnt">14 позиций</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=led-par-set" class="product-card"
+             data-cat="light" data-avail="free" data-cond="new" data-price="2000" data-name="Набор LED PAR 8 шт.">
+            <div class="pc-img">
+              <img class="photo" src="images/led-par-set.jpg" alt="Набор LED PAR 8 шт." onerror="this.style.opacity=0">
+              <div class="pc-emoji">💡</div>
+              <div class="pc-badge"><span class="badge b-green">Свободен</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Набор LED PAR 8 шт. + стойки</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Световой прибор RGB</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Управление</span><span class="pc-spec-val">DMX 512, пульт</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Новое</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">2 000 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">1 650 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=chauvet-spot" class="product-card"
+             data-cat="light" data-avail="free" data-cond="excellent" data-price="800" data-name="Chauvet DJ Spot 160">
+            <div class="pc-img">
+              <img class="photo" src="images/chauvet-spot.webp" alt="Chauvet DJ Spot 160" onerror="this.style.opacity=0">
+              <div class="pc-emoji">💡</div>
+              <div class="pc-badge"><span class="badge b-green">Свободен</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Chauvet DJ Spot 160 (2 шт.)</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Поворотный прожектор</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Эффекты</span><span class="pc-spec-val">Гобо, цвет, строб</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Отличное</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">800 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">660 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── DJ-ОБОРУДОВАНИЕ ── -->
+      <div class="cat-section" data-cat="dj" id="sec-dj">
+        <div class="cat-section-title">
+          <span class="icon">🎛️</span> DJ-оборудование
+          <span class="cnt">20 позиций</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=pioneer-ddj" class="product-card"
+             data-cat="dj" data-avail="service" data-cond="excellent" data-price="1500" data-name="Pioneer DDJ-FLX6">
+            <div class="pc-img">
+              <img class="photo" src="images/pioneer-ddj.jpg" alt="Pioneer DDJ-FLX6" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎛️</div>
+              <div class="pc-badge"><span class="badge b-red">На обслуживании</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Pioneer DDJ-FLX6</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">DJ-контроллер</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Деки</span><span class="pc-spec-val">4, Serato / rekordbox</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Отличное</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">1 500 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">1 200 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent" style="opacity:.5;cursor:not-allowed">На обслуживании</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=pioneer-djm" class="product-card"
+             data-cat="dj" data-avail="free" data-cond="new" data-price="800" data-name="Pioneer DJ DJM-250MK2">
+            <div class="pc-img">
+              <img class="photo" src="images/pioneer-djm.png" alt="Pioneer DJM-250MK2" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎛️</div>
+              <div class="pc-badge"><span class="badge b-green">Свободен</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Pioneer DJM-250MK2 Микшер</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">DJ-микшер</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Каналы</span><span class="pc-spec-val">2-канальный, USB</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Новое</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">800 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">660 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── ДУХОВЫЕ ── -->
+      <div class="cat-section" data-cat="brass" id="sec-brass">
+        <div class="cat-section-title">
+          <span class="icon">🎺</span> Духовые инструменты
+          <span class="cnt">17 позиций</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=yamaha-trumpet" class="product-card"
+             data-cat="brass" data-avail="free" data-cond="excellent" data-price="450" data-name="Yamaha YTR-2330 Труба">
+            <div class="pc-img">
+              <img class="photo" src="images/yamaha-trumpet.jpg" alt="Yamaha YTR-2330" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎺</div>
+              <div class="pc-badge"><span class="badge b-green">Свободна</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Yamaha YTR-2330 Труба</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Труба Bb</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Материал</span><span class="pc-spec-val">Лакированная латунь</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Отличное</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">450 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">370 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=jupiter-sax" class="product-card"
+             data-cat="brass" data-avail="free" data-cond="good" data-price="550" data-name="Jupiter JAS-567 Альт-саксофон">
+            <div class="pc-img">
+              <img class="photo" src="images/jupiter-sax.jpg" alt="Jupiter JAS-567" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎷</div>
+              <div class="pc-badge"><span class="badge b-green">Свободна</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Jupiter JAS-567 Альт-саксофон</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Альт-саксофон Eb</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Корпус</span><span class="pc-spec-val">Жёлтая латунь</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--warn)">Хорошее</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">550 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">460 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── АКУСТИЧЕСКИЕ СИСТЕМЫ ── -->
+      <div class="cat-section" data-cat="speakers" id="sec-speakers">
+        <div class="cat-section-title">
+          <span class="icon">🔉</span> Акустические системы
+          <span class="cnt">18 позиций</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=qsc-k12" class="product-card"
+             data-cat="speakers" data-avail="free" data-cond="excellent" data-price="1800" data-name="QSC K12.2 Активная акустика">
+            <div class="pc-img">
+              <img class="photo" src="images/qsc-k12.webp" alt="QSC K12.2" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🔉</div>
+              <div class="pc-badge"><span class="badge b-green">Свободна</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">QSC K12.2 Активная акустика</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Активная колонка</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Мощность</span><span class="pc-spec-val">2000 Вт, DSP</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Отличное</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">1 800 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">1 500 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=yamaha-dxr12" class="product-card"
+             data-cat="speakers" data-avail="free" data-cond="new" data-price="1400" data-name="Yamaha DXR12mkII Колонка">
+            <div class="pc-img">
+              <img class="photo" src="images/yamaha-dxr12.webp" alt="Yamaha DXR12mkII" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🔉</div>
+              <div class="pc-badge"><span class="badge b-green">Свободна</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Yamaha DXR12mkII Колонка</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Активная колонка</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Мощность</span><span class="pc-spec-val">1100 Вт Class-D</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Новое</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">1 400 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">1 150 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ── ЗВУКОВЫЕ КАРТЫ / ИНТЕРФЕЙСЫ ── -->
+      <div class="cat-section" data-cat="audio-if" id="sec-audio-if">
+        <div class="cat-section-title">
+          <span class="icon">🎚️</span> Звуковые карты / Интерфейсы
+          <span class="cnt">12 позиций</span>
+        </div>
+        <div class="products-grid">
+
+          <a href="item.html?id=focusrite-scarlett" class="product-card"
+             data-cat="audio-if" data-avail="free" data-cond="new" data-price="400" data-name="Focusrite Scarlett 2i2 Аудиоинтерфейс">
+            <div class="pc-img">
+              <img class="photo" src="images/focusrite-scarlett.jpg" alt="Focusrite Scarlett 2i2" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎚️</div>
+              <div class="pc-badge"><span class="badge b-green">Свободен</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Focusrite Scarlett 2i2</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Аудиоинтерфейс USB</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Входы</span><span class="pc-spec-val">2× XLR/TRS комбо</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--success)">Новое</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">400 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">320 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+          <a href="item.html?id=behringer-umc" class="product-card"
+             data-cat="audio-if" data-avail="free" data-cond="good" data-price="250" data-name="Behringer UMC202HD Аудиоинтерфейс">
+            <div class="pc-img">
+              <img class="photo" src="images/behringer-umc.jpg" alt="Behringer UMC202HD" onerror="this.style.opacity=0">
+              <div class="pc-emoji">🎚️</div>
+              <div class="pc-badge"><span class="badge b-green">Свободен</span></div>
+              <div class="pc-fav">♡</div>
+            </div>
+            <div class="pc-body">
+              <div class="pc-title">Behringer UMC202HD</div>
+              <div class="pc-specs">
+                <div class="pc-spec-row"><span class="pc-spec-label">Тип</span><span class="pc-spec-val">Аудиоинтерфейс USB</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Входы</span><span class="pc-spec-val">2× XLR/TRS, MIDI I/O</span></div>
+                <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:var(--warn)">Хорошее</span></div>
+              </div>
+              <div class="pc-pricing">
+                <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">250 ₽</div><div class="pc-price-unit">за сутки</div></div>
+                <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">200 ₽</div><div class="pc-price-unit">за сутки</div></div>
+              </div>
+              <button class="btn-rent">Взять в аренду</button>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- No results message -->
+      <div id="noResults" style="display:none;text-align:center;padding:60px 20px;color:var(--text-muted)">
+        <div style="font-size:3rem;margin-bottom:14px">🔍</div>
+        <div style="font-size:1.1rem;font-weight:700;margin-bottom:6px">Ничего не найдено</div>
+        <div style="font-size:.88rem">Попробуйте изменить параметры фильтрации</div>
+        <button class="btn btn-outline" style="margin-top:18px" onclick="resetFilters()">Сбросить фильтры</button>
+      </div>
+
+    </div><!-- /gridView -->
+
+  </div><!-- /catalog-main -->
+</div><!-- /catalog-wrap -->
+
+<!-- FOOTER -->
+<footer style="margin-top:40px">
+  <div class="footer-bottom">
+    <div>© 2026 MusicRent. Все права защищены.</div>
+    <div>Дипломный проект · ГПОУ АО «Амурский аграрный колледж» · Данилов Я.А. · ИП-41</div>
+  </div>
+</footer>
+
+<script>
+  /* ─────────────────────────────────────────────
+     State
+  ───────────────────────────────────────────── */
+  let activeCat = 'all';
+
+  const COND_MAP = { new: 'new', excellent: 'excellent', good: 'good', ok: 'ok' };
+
+  /* ─────────────────────────────────────────────
+     Category filter (sidebar links) + scroll
+  ───────────────────────────────────────────── */
+  let _scrollFromClick = false;
+
+  function filterCat(el, cat) {
+    activeCat = cat;
+    document.querySelectorAll('.tree-link[data-filter-cat]').forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+    applyFilters();
+
+    /* Плавный скролл к секции */
+    if (cat === 'all') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const sec = document.getElementById('sec-' + cat);
+      if (sec) {
+        _scrollFromClick = true;
+        setTimeout(() => { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+        setTimeout(() => { _scrollFromClick = false; }, 1200);
+      }
+    }
+  }
+
+  /* ─────────────────────────────────────────────
+     Main filter function
+  ───────────────────────────────────────────── */
+  function applyFilters() {
+    const maxPrice = parseInt(document.getElementById('priceRange').value) || 9999;
+    const fromPrice = parseInt(document.getElementById('priceFrom').value) || 0;
+    const toPrice = parseInt(document.getElementById('priceTo').value) || 9999;
+
+    const availFree    = document.getElementById('avail-free').checked;
+    const availBooked  = document.getElementById('avail-booked').checked;
+    const availBusy    = document.getElementById('avail-busy').checked;
+    const availService = document.getElementById('avail-service').checked;
+
+    const checkedCond = Array.from(document.querySelectorAll('.cond-filter:checked')).map(c => c.value);
+
+    const searchQ = document.getElementById('searchInput').value.toLowerCase().trim();
+
+    let totalVisible = 0;
+
+    document.querySelectorAll('.cat-section').forEach(section => {
+      const sectionCat = section.dataset.cat;
+
+      // Category filter
+      if (activeCat !== 'all' && activeCat !== sectionCat) {
+        section.setAttribute('data-hidden', 'true');
+        return;
+      }
+      section.removeAttribute('data-hidden');
+
+      let sectionVisible = 0;
+      section.querySelectorAll('.product-card').forEach(card => {
+        const cardPrice = parseInt(card.dataset.price) || 0;
+        const cardAvail = card.dataset.avail;
+        const cardCond  = card.dataset.cond;
+        const cardName  = (card.dataset.name || '').toLowerCase();
+
+        // Availability
+        let availOk = false;
+        if (cardAvail === 'free'    && availFree)    availOk = true;
+        if (cardAvail === 'booked'  && availBooked)  availOk = true;
+        if (cardAvail === 'busy'    && availBusy)    availOk = true;
+        if (cardAvail === 'service' && availService) availOk = true;
+        // if none checked — show all
+        if (!availFree && !availBooked && !availBusy && !availService) availOk = true;
+
+        // Price
+        const priceOk = cardPrice <= maxPrice && cardPrice >= fromPrice && cardPrice <= toPrice;
+
+        // Condition
+        const condOk = checkedCond.length === 0 || checkedCond.includes(cardCond);
+
+        // Search
+        const searchOk = !searchQ || cardName.includes(searchQ);
+
+        const show = availOk && priceOk && condOk && searchOk;
+        card.setAttribute('data-hidden', show ? 'false' : 'true');
+        card.style.display = show ? '' : 'none';
+        if (show) { sectionVisible++; totalVisible++; }
+      });
+
+      // Hide section header if no cards visible
+      section.setAttribute('data-hidden', sectionVisible === 0 ? 'true' : 'false');
+      section.style.display = sectionVisible === 0 ? 'none' : '';
+    });
+
+    // Sort
+    const sortVal = document.querySelector('.sort-sel').value;
+    if (sortVal !== 'default') {
+      document.querySelectorAll('.cat-section .products-grid').forEach(grid => {
+        const cards = Array.from(grid.querySelectorAll('.product-card')).filter(c => c.style.display !== 'none');
+        cards.sort((a, b) => {
+          if (sortVal === 'price-asc')  return parseInt(a.dataset.price) - parseInt(b.dataset.price);
+          if (sortVal === 'price-desc') return parseInt(b.dataset.price) - parseInt(a.dataset.price);
+          if (sortVal === 'name-asc')   return (a.dataset.name||'').localeCompare(b.dataset.name||'','ru');
+          return 0;
+        });
+        cards.forEach(c => grid.appendChild(c));
+      });
+    }
+
+    // Update counts
+    document.getElementById('shownCount').innerHTML =
+      `Показано <strong style="color:var(--text)">${totalVisible}</strong> позиций`;
+
+    document.getElementById('noResults').style.display = totalVisible === 0 ? '' : 'none';
+  }
+
+  /* ─────────────────────────────────────────────
+     Reset
+  ───────────────────────────────────────────── */
+  function resetFilters() {
+    activeCat = 'all';
+    document.querySelectorAll('.tree-link[data-filter-cat]').forEach(l => l.classList.remove('active'));
+    document.querySelector('.tree-link[data-filter-cat="all"]').classList.add('active');
+
+    document.getElementById('avail-free').checked    = true;
+    document.getElementById('avail-booked').checked  = false;
+    document.getElementById('avail-busy').checked    = false;
+    document.getElementById('avail-service').checked = false;
+
+    document.getElementById('priceRange').value = 2000;
+    document.getElementById('priceRangeVal').textContent = '2000';
+    document.getElementById('priceFrom').value = 0;
+    document.getElementById('priceTo').value   = 2000;
+
+    document.querySelectorAll('.cond-filter').forEach(c => {
+      c.checked = (c.value === 'new' || c.value === 'excellent' || c.value === 'good');
+    });
+
+    document.getElementById('searchInput').value = '';
+    applyFilters();
+  }
+
+  /* ─────────────────────────────────────────────
+     View toggle (grid / list)
+  ───────────────────────────────────────────── */
+  function setView(view) {
+    const btnG = document.getElementById('btnGrid');
+    const btnL = document.getElementById('btnList');
+    const grids = document.querySelectorAll('.cat-section .products-grid');
+    if (view === 'grid') {
+      btnG.classList.add('active'); btnL.classList.remove('active');
+      grids.forEach(g => { g.style.gridTemplateColumns = ''; });
+    } else {
+      btnL.classList.add('active'); btnG.classList.remove('active');
+      grids.forEach(g => { g.style.gridTemplateColumns = '1fr'; });
+    }
+  }
+
+  /* ─────────────────────────────────────────────
+     Search input live
+  ───────────────────────────────────────────── */
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  // sync mobile search
+  const mobileSearch = document.getElementById('searchInputMobile');
+  if (mobileSearch) {
+    mobileSearch.addEventListener('input', () => {
+      document.getElementById('searchInput').value = mobileSearch.value;
+      applyFilters();
+    });
+  }
+
+  // Init
+  applyFilters();
+
+  /* ─────────────────────────────────────────────
+     Реальные счётчики категорий
+  ───────────────────────────────────────────── */
+  (function updateRealCounts() {
+    let grandTotal = 0;
+
+    /* Для каждой секции считаем карточки */
+    document.querySelectorAll('.cat-section').forEach(function(sec) {
+      const cat   = sec.dataset.cat;
+      const count = sec.querySelectorAll('.product-card').length;
+      grandTotal += count;
+
+      /* Обновляем счётчик в заголовке секции */
+      const cntEl = sec.querySelector('.cnt');
+      if (cntEl) cntEl.textContent = count + ' ' + plural(count, 'позиция', 'позиции', 'позиций');
+
+      /* Обновляем счётчик в сайдбаре */
+      const sideLink = document.querySelector('.tree-link[data-filter-cat="' + cat + '"] .count');
+      if (sideLink) sideLink.textContent = count;
+    });
+
+    /* Обновляем "Все категории" */
+    const allLink = document.querySelector('.tree-link[data-filter-cat="all"] .count');
+    if (allLink) allLink.textContent = grandTotal;
+
+    /* Обновляем шапку страницы */
+    const pageCount = document.getElementById('resultsCount');
+    if (pageCount) pageCount.textContent = 'Показано ' + grandTotal + ' позиций';
+  })();
+
+  function plural(n, f1, f2, f5) {
+    const m = Math.abs(n) % 100;
+    const m10 = m % 10;
+    if (m > 10 && m < 20) return f5;
+    if (m10 === 1) return f1;
+    if (m10 >= 2 && m10 <= 4) return f2;
+    return f5;
+  }
+
+  /* ─────────────────────────────────────────────
+     IntersectionObserver: подсветка активной
+     категории в сайдбаре при прокрутке
+  ───────────────────────────────────────────── */
+  (function initScrollSpy() {
+    const sections = document.querySelectorAll('.cat-section[id]');
+    if (!sections.length) return;
+
+    const io = new IntersectionObserver(function(entries) {
+      if (_scrollFromClick) return; /* игнорируем во время скролла от клика */
+      entries.forEach(function(e) {
+        if (e.isIntersecting && e.intersectionRatio >= 0.15) {
+          const cat = e.target.dataset.cat;
+          if (!cat) return;
+          document.querySelectorAll('.tree-link[data-filter-cat]').forEach(function(l) {
+            const isActive = l.dataset.filterCat === cat ||
+                             (l.dataset.filterCat === 'all' && cat);
+            l.classList.toggle('active', l.dataset.filterCat === cat);
+          });
+          /* «Все категории» — активна только если выбран режим «all» */
+          const allLink = document.querySelector('.tree-link[data-filter-cat="all"]');
+          if (allLink) allLink.classList.remove('active');
+        }
+      });
+    }, {
+      threshold: [0.15, 0.5],
+      rootMargin: '-80px 0px -40% 0px'
+    });
+
+    sections.forEach(function(s) { io.observe(s); });
+  })();
+
+  /* ─ sidebar mobile toggle ─ */
+  function toggleSidebar() {
+    const sidebar = document.getElementById('catalogSidebar');
+    const toggle  = document.getElementById('sidebarToggle');
+    if (!sidebar) return;
+    const isOpen = sidebar.classList.toggle('mobile-open');
+    toggle.querySelector('.sidebar-toggle-arrow').textContent = isOpen ? '▲' : '▼';
+  }
+</script>
+
+<!-- CART MODAL -->
+<div class="overlay" id="cartModal">
+  <div class="modal cart-modal">
+    <div class="modal-hd">
+      <div class="modal-hd-title">🛒 Корзина</div>
+      <button class="modal-x" onclick="closeCart()">✕</button>
+    </div>
+    <div id="cartBody" class="cart-body"></div>
+    <div id="cartFooter" class="cart-footer" style="display:none">
+      <div class="cart-total-row"><span>Итого:</span><span id="cartTotal" class="cart-total-val">0 ₽</span></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="checkoutCart()">Оформить заказ</button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:6px;font-size:.82rem" onclick="clearCart()">Очистить корзину</button>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="data.js"></script>
+<script src="db.js"></script>
+<script src="auth.js"></script>
+<script src="cart.js"></script>
+<script src="cursor.js"></script>
+<script src="modals.js"></script>
+<script>
+/* ─── Подгрузить оборудование добавленное администратором ─── */
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const dbItems = await dbGetAll('equipment');
+    const adminItems = dbItems.filter(e => e.source === 'admin' || e.source === 'seed-edited');
+    if (!adminItems.length) return;
+
+    const COND_COLOR = {new:'var(--success)',excellent:'var(--success)',good:'var(--warn)',ok:'var(--danger)'};
+    const gridView   = document.getElementById('gridView');
+    const noResults  = document.getElementById('noResults');
+
+    /* Создаём секцию "Добавлено администратором" или вставляем в нужную секцию */
+    let adminSection = document.getElementById('sec-admin');
+    if (!adminSection) {
+      adminSection = document.createElement('div');
+      adminSection.className  = 'cat-section';
+      adminSection.dataset.cat = 'admin';
+      adminSection.id          = 'sec-admin';
+      adminSection.innerHTML = `
+        <div class="cat-section-title">
+          <span class="icon">⭐</span> Новинки каталога
+          <span class="cnt">${adminItems.length} позиций</span>
+        </div>
+        <div class="products-grid" id="adminGrid"></div>`;
+      gridView.insertBefore(adminSection, noResults);
+    }
+
+    const adminGrid = document.getElementById('adminGrid');
+    adminGrid.innerHTML = adminItems.map(eq => {
+      const avail  = eq.avail || 'free';
+      const availB = avail === 'free' ? '<span class="badge b-green">Свободно</span>' :
+                     avail === 'booked' ? '<span class="badge b-yellow">Забронировано</span>' :
+                     avail === 'service' ? '<span class="badge b-red">На обслуживании</span>' :
+                     '<span class="badge b-blue">В аренде</span>';
+      const condColor = COND_COLOR[eq.condition] || 'var(--text-muted)';
+      const condLabel = COND_LABEL[eq.condition] || eq.condition || '—';
+      const btnDisabled = avail !== 'free' ? 'style="opacity:.5;cursor:not-allowed"' : '';
+      return `
+        <a href="item.html?id=${eq.id}" class="product-card"
+           data-cat="admin" data-avail="${avail}" data-cond="${eq.condition||'good'}"
+           data-price="${eq.price1||0}" data-name="${(eq.name||'').toLowerCase()}">
+          <div class="pc-img">
+            ${eq.image?`<img class="photo" src="${eq.image}" alt="${eq.name}" onerror="this.style.opacity=0">`:''}
+            <div class="pc-emoji">${eq.emoji||'🎵'}</div>
+            <div class="pc-badge">${availB}</div>
+            <div class="pc-fav">♡</div>
+          </div>
+          <div class="pc-body">
+            <div class="pc-title">${eq.name}</div>
+            <div class="pc-specs">
+              <div class="pc-spec-row"><span class="pc-spec-label">Категория</span><span class="pc-spec-val">${eq.category||''}</span></div>
+              <div class="pc-spec-row"><span class="pc-spec-label">Состояние</span><span class="pc-spec-val" style="color:${condColor}">${condLabel}</span></div>
+            </div>
+            <div class="pc-pricing">
+              <div class="pc-price-box"><div class="pc-price-period">1 день</div><div class="pc-price-val">${Number(eq.price1||0).toLocaleString('ru')} ₽</div><div class="pc-price-unit">за сутки</div></div>
+              <div class="pc-price-box"><div class="pc-price-period">2–5 дней</div><div class="pc-price-val">${Number(eq.price2||0).toLocaleString('ru')} ₽</div><div class="pc-price-unit">за сутки</div></div>
+            </div>
+            <button class="btn-rent" ${btnDisabled}>${avail==='free'?'Взять в аренду':'Недоступно'}</button>
+          </div>
+        </a>`;
+    }).join('');
+
+    /* добавляем в sidebar ссылку на эту категорию */
+    const sidebarTree = document.querySelector('.sidebar-tree');
+    if (sidebarTree && !document.querySelector('[data-filter-cat="admin"]')) {
+      sidebarTree.insertAdjacentHTML('beforeend', `
+        <div class="tree-item">
+          <div class="tree-link" data-filter-cat="admin" onclick="filterCat(this,'admin')">
+            ⭐ Новинки <span class="count">${adminItems.length}</span>
+          </div>
+        </div>`);
+    }
+
+    /* перезапустим фильтры */
+    applyFilters();
+    /* инициализируем новые кнопки */
+    initCardButtons();
+    initFavorites();
+  } catch(e) { console.log('Admin equipment load:', e); }
+});
+</script>
+</body>
+</html>

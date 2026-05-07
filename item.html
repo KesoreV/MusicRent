@@ -1,0 +1,666 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Оборудование — MusicRent</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="nav-logo" href="index.html">
+      <div class="logo-box">🎸</div>
+      MusicRent
+    </a>
+    <div class="nav-menu">
+      <a class="nav-item" href="index.html">Главная</a>
+      <a class="nav-item active" href="catalog.html">Каталог</a>
+      <a class="nav-item" href="index.html#how">Как это работает</a>
+      <a class="nav-item" href="index.html#reviews">Отзывы</a>
+      <a class="nav-item" href="index.html#contacts">Контакты</a>
+    </div>
+    <div class="nav-right">
+      <div class="cart-btn" onclick="openCart()">🛒<span class="cart-count"></span></div>
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a class="nav-item" href="index.html">Главная</a>
+  <a class="nav-item active" href="catalog.html">Каталог</a>
+  <a class="nav-item" href="index.html#how">Как это работает</a>
+  <a class="nav-item" href="index.html#reviews">Отзывы</a>
+  <a class="nav-item" href="index.html#contacts">Контакты</a>
+  <div class="mobile-nav-auth" id="mobileNavAuth"></div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Главная</a><span>/</span>
+      <a href="catalog.html">Каталог</a><span>/</span>
+      <span id="bc-category" style="color:var(--text-muted)">...</span><span>/</span>
+      <span id="bc-name" style="color:var(--text-muted)">...</span>
+    </div>
+  </div>
+</div>
+
+<!-- ITEM WRAP -->
+<div class="item-wrap">
+
+  <!-- LEFT -->
+  <div style="display:flex;flex-direction:column;gap:20px">
+
+    <!-- Gallery -->
+    <div class="item-gallery-block">
+      <div class="item-main-photo" id="mainPhotoWrap">
+        <img id="mainImg" src="" alt="" onerror="this.style.display='none'">
+        <div class="big-emoji" id="mainEmoji"></div>
+        <div style="position:absolute;top:14px;left:14px;z-index:3" id="mainBadge"></div>
+      </div>
+      <div class="item-thumbs-row" id="thumbsRow"></div>
+    </div>
+
+    <!-- Description -->
+    <div class="item-specs-block">
+      <div class="block-title">Описание</div>
+      <div id="itemDesc" style="color:var(--text-muted);font-size:.9rem;line-height:1.75"></div>
+    </div>
+
+    <!-- Specs -->
+    <div class="item-specs-block">
+      <div class="block-title">Технические характеристики</div>
+      <div class="spec-table" id="specTable"></div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="item-specs-block">
+      <div class="block-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span id="reviewsTitle">Отзывы</span>
+        <span id="reviewsRating" style="color:var(--text-muted);font-size:.85rem"></span>
+      </div>
+      <div class="reviews-block" id="reviewsList"></div>
+
+      <!-- Форма написать отзыв -->
+      <div id="reviewFormWrap" style="display:none;margin-top:16px" class="review-form-wrap">
+        <h4>Оставить отзыв</h4>
+        <div class="stars-selector" id="starsSelector">
+          <button class="star-btn active" data-val="1" onclick="selectStar(1)">★</button>
+          <button class="star-btn active" data-val="2" onclick="selectStar(2)">★</button>
+          <button class="star-btn active" data-val="3" onclick="selectStar(3)">★</button>
+          <button class="star-btn active" data-val="4" onclick="selectStar(4)">★</button>
+          <button class="star-btn active" data-val="5" onclick="selectStar(5)">★</button>
+        </div>
+        <textarea id="reviewText" class="form-control" rows="3" placeholder="Поделитесь впечатлениями об оборудовании..." style="margin-bottom:10px;resize:vertical"></textarea>
+        <div id="reviewError" style="display:none;color:var(--danger);font-size:.82rem;margin-bottom:8px"></div>
+        <button class="btn btn-primary" onclick="submitReview()">Опубликовать отзыв</button>
+      </div>
+      <div id="reviewLoginHint" style="display:none;margin-top:14px;font-size:.83rem;color:var(--text-muted)">
+        <a href="login.html" style="color:var(--accent)">Войдите</a>, чтобы оставить отзыв
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: Booking -->
+  <div class="item-right-col">
+    <div class="booking-block glow-box">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px" id="bookingMeta"></div>
+        <div id="bookingTitle" style="font-size:1.05rem;font-weight:700;margin-bottom:4px"></div>
+      </div>
+
+      <!-- Price tiers -->
+      <div class="booking-tiers" id="bookingTiers"></div>
+
+      <!-- Date range -->
+      <div class="date-grid">
+        <div class="form-group">
+          <label class="form-label">Дата начала</label>
+          <input class="form-control" type="date" id="dateFrom">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Дата окончания</label>
+          <input class="form-control" type="date" id="dateTo">
+        </div>
+      </div>
+
+      <!-- Price summary -->
+      <div class="price-summary">
+        <div class="ps-row"><span id="calcLine"></span><span id="calcBase"></span></div>
+        <div class="ps-row"><span>Залог (возвратный)</span><span id="depositAmt">5 000 ₽</span></div>
+        <div class="ps-row"><span>Скидка (2+ суток)</span><span style="color:var(--success)" id="calcDisc"></span></div>
+        <div class="ps-row total"><span>Итого к оплате</span><span id="calcTotal"></span></div>
+      </div>
+
+      <button class="btn-rent" id="rentBtn" onclick="showModal()">
+        🛒 Добавить в корзину
+      </button>
+      <button class="btn btn-outline" id="favBtn" style="width:100%;justify-content:center;margin-top:0" onclick="toggleItemFav()">
+        ♡ В избранное
+      </button>
+
+      <!-- Perks -->
+      <div class="booking-perks">
+        <div class="perk"><span class="perk-icon">✅</span> Бесплатная доставка от 3 суток</div>
+        <div class="perk"><span class="perk-icon">🔒</span> Залог возвращается при сдаче</div>
+        <div class="perk"><span class="perk-icon">🛠️</span> Оборудование настроено и проверено</div>
+        <div class="perk" id="perkExtra"></div>
+      </div>
+    </div>
+
+    <!-- Similar -->
+    <div style="margin-top:20px">
+      <div style="font-weight:700;font-size:.95rem;margin-bottom:12px">Похожее оборудование</div>
+      <div id="similarList" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ЛАЙТБОКС -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-nav lightbox-prev" onclick="event.stopPropagation();lbNav(-1)">‹</button>
+  <div class="lightbox-img-wrap" onclick="event.stopPropagation()">
+    <img id="lbImg" src="" alt="">
+  </div>
+  <button class="lightbox-nav lightbox-next" onclick="event.stopPropagation();lbNav(1)">›</button>
+  <div class="lightbox-dots" id="lbDots"></div>
+  <div class="lightbox-counter" id="lbCounter"></div>
+</div>
+
+<!-- ADDED TO CART MODAL -->
+<div class="overlay" id="addedModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-hd-title">✅ Добавлено в корзину</div>
+      <button class="modal-x" onclick="closeAddedModal()">✕</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:4px">
+      <div id="modalEmoji" style="width:60px;height:60px;background:linear-gradient(135deg,#162030,#1a2d42);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;position:relative;overflow:hidden">
+        <img id="modalImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
+        <span id="modalEmj"></span>
+      </div>
+      <div>
+        <div id="modalTitle" style="font-weight:700"></div>
+        <div id="modalDates" style="font-size:.84rem;color:var(--text-muted);margin-top:2px"></div>
+        <div id="modalPrice" style="color:var(--accent);font-weight:800;font-size:1.05rem;margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeAddedModal()">Продолжить покупки</button>
+      <button class="btn btn-primary" onclick="closeAddedModal();openCart()">Перейти в корзину →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="overlay" id="cartModal">
+  <div class="modal cart-modal">
+    <div class="modal-hd">
+      <div class="modal-hd-title">🛒 Корзина</div>
+      <button class="modal-x" onclick="closeCart()">✕</button>
+    </div>
+    <div id="cartBody" class="cart-body"></div>
+    <div id="cartFooter" class="cart-footer" style="display:none">
+      <div class="cart-total-row"><span>Итого:</span><span id="cartTotal" class="cart-total-val">0 ₽</span></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="checkoutCart()">Оформить заказ</button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:6px;font-size:.82rem" onclick="clearCart()">Очистить корзину</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<footer style="margin-top:40px">
+  <div class="footer-bottom">
+    <div>© 2026 MusicRent. Все права защищены.</div>
+    <div>Дипломный проект · ГПОУ АО «Амурский аграрный колледж» · Данилов Я.А. · ИП-41</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="data.js"></script>
+<script src="db.js"></script>
+<script src="auth.js"></script>
+<script src="cart.js"></script>
+<script src="cursor.js"></script>
+<script src="modals.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function fmt(n) { return Number(n).toLocaleString('ru') + ' ₽'; }
+
+/* ══════════════════════════════════════
+   ЛАЙТБОКС
+══════════════════════════════════════ */
+let _lbImgs = [];
+let _lbIdx  = 0;
+
+function openLightbox(idx) {
+  const p = window._currentProduct;
+  if (!p) return;
+  _lbImgs = [p.image, ...(p.extraImages || [])].filter(Boolean);
+  if (!_lbImgs.length) return;
+  _lbIdx = Math.max(0, Math.min(idx || 0, _lbImgs.length - 1));
+  lbRender();
+  document.getElementById('lightbox').classList.add('open');
+  document.addEventListener('keydown', lbKeyHandler);
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.removeEventListener('keydown', lbKeyHandler);
+}
+
+function lbNav(dir) {
+  _lbIdx = (_lbIdx + dir + _lbImgs.length) % _lbImgs.length;
+  lbRender();
+}
+
+function lbRender() {
+  document.getElementById('lbImg').src     = _lbImgs[_lbIdx];
+  document.getElementById('lbCounter').textContent =
+    _lbImgs.length > 1 ? `${_lbIdx + 1} / ${_lbImgs.length}` : '';
+  document.getElementById('lbDots').innerHTML = _lbImgs.length > 1
+    ? _lbImgs.map((_, i) =>
+        `<button class="lb-dot${i === _lbIdx ? ' active' : ''}"
+          onclick="event.stopPropagation();_lbIdx=${i};lbRender()"></button>`
+      ).join('')
+    : '';
+  /* Скрываем стрелки если фото одно */
+  const showNav = _lbImgs.length > 1;
+  document.querySelector('.lightbox-prev').style.display = showNav ? '' : 'none';
+  document.querySelector('.lightbox-next').style.display = showNav ? '' : 'none';
+}
+
+function lbKeyHandler(e) {
+  if (e.key === 'Escape')      closeLightbox();
+  if (e.key === 'ArrowLeft')   lbNav(-1);
+  if (e.key === 'ArrowRight')  lbNav(1);
+}
+
+/* ─── Установить даты по умолчанию ─── */
+(function setDefaultDates() {
+  const today    = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const fmt8 = d => d.toISOString().slice(0, 10);
+  document.getElementById('dateFrom').value = fmt8(today);
+  document.getElementById('dateTo').value   = fmt8(tomorrow);
+})();
+
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
+function render(p) {
+  document.title = p.name + ' — MusicRent';
+
+  document.getElementById('bc-category').textContent = p.category;
+  document.getElementById('bc-name').textContent     = p.name;
+
+  /* Gallery */
+  const mainImg   = document.getElementById('mainImg');
+  const mainEmoji = document.getElementById('mainEmoji');
+  mainEmoji.textContent = p.emoji;
+  mainImg.alt = p.name;
+  document.getElementById('mainBadge').innerHTML =
+    `<span class="badge ${AVAIL_CLASS[p.avail]}">${AVAIL_LABEL[p.avail]}</span>`;
+
+  if (p.image) {
+    /* Скрываем эмодзи пока фото не загрузилось */
+    mainEmoji.style.display = 'none';
+    mainImg.src = p.image;
+    mainImg.style.display = '';
+    /* Если умный загрузчик перебрал все форматы и не нашёл — показываем эмодзи */
+    mainImg.addEventListener('imgallfailed', function() {
+      mainEmoji.style.display = '';
+      document.getElementById('mainPhotoWrap').style.cursor = 'default';
+    }, { once: true });
+    /* Клик на фото — открыть лайтбокс */
+    document.getElementById('mainPhotoWrap').onclick = () => openLightbox(0);
+  } else {
+    mainImg.style.display = 'none';
+    mainEmoji.style.display = '';
+    document.getElementById('mainPhotoWrap').style.cursor = 'default';
+  }
+
+  const allImgs   = [p.image, ...(p.extraImages || [])].filter(Boolean);
+  const thumbsRow = document.getElementById('thumbsRow');
+
+  if (allImgs.length > 0) {
+    thumbsRow.innerHTML = allImgs.map((src, i) => `
+      <div class="item-thumb ${i===0?'active':''}" onclick="switchThumb(this,'${src}',${i})" title="Нажмите для просмотра">
+        <img src="${src}" alt="" style="z-index:2;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:4px;background:#eef1f5" onerror="this.style.display='none'">
+        <span style="font-size:1.8rem;position:relative;z-index:1">${p.emoji}</span>
+      </div>
+    `).join('');
+  } else {
+    /* Нет фото — только большое эмодзи без полоски миниатюр */
+    thumbsRow.style.display = 'none';
+  }
+
+  /* Description */
+  document.getElementById('itemDesc').textContent = p.desc || '';
+
+  /* Specs */
+  document.getElementById('specTable').innerHTML = (p.specs || []).map(([l,v]) => `
+    <div class="st-row">
+      <span class="st-label">${l}</span>
+      <span class="st-val" ${l==='Состояние'?'style="color:var(--success)"':''}>${v}</span>
+    </div>
+  `).join('');
+
+  /* Booking meta */
+  document.getElementById('bookingMeta').innerHTML =
+    `<span class="badge ${AVAIL_CLASS[p.avail]}">${AVAIL_LABEL[p.avail]}</span>
+     <span style="font-size:.78rem;color:var(--text-dim)">${p.invId} · ★ ${p.rating} (${p.reviewCount})</span>`;
+  document.getElementById('bookingTitle').textContent = p.name;
+
+  /* Price tiers */
+  const discount = Math.round((1 - p.price2 / p.price1) * 100);
+  document.getElementById('bookingTiers').innerHTML = `
+    <div class="tier-box">
+      <div class="tier-period">1 день</div>
+      <div class="tier-price">${fmt(p.price1)}</div>
+      <div class="tier-unit">за сутки</div>
+    </div>
+    <div class="tier-box" style="border-color:rgba(59,130,246,.35);background:var(--accent-dim)">
+      <div class="tier-period">2–5 дней</div>
+      <div class="tier-price">${fmt(p.price2)}</div>
+      <div class="tier-unit">за сутки <span style="color:var(--success)">−${discount}%</span></div>
+    </div>
+  `;
+
+  /* Rent button */
+  const btn = document.getElementById('rentBtn');
+  if (p.avail !== 'free') {
+    btn.textContent   = AVAIL_BTN[p.avail];
+    btn.style.opacity = '0.5';
+    btn.style.cursor  = 'not-allowed';
+    btn.onclick       = null;
+  } else {
+    btn.textContent   = AVAIL_BTN.free;
+    btn.style.opacity = '';
+    btn.style.cursor  = '';
+    btn.onclick       = () => addItemToCart(p);
+  }
+
+  /* Perk */
+  document.getElementById('perkExtra').innerHTML = p.perk
+    ? `<span class="perk-icon">📌</span> ${p.perk}` : '';
+
+  /* Modal setup */
+  document.getElementById('modalImg').src       = p.image || '';
+  document.getElementById('modalEmj').textContent = p.emoji;
+  document.getElementById('modalTitle').textContent = p.name;
+
+  /* Similar */
+  document.getElementById('similarList').innerHTML = (p.similar || []).map(id => {
+    const s = PRODUCTS[id];
+    if (!s) return '';
+    return `
+      <a href="item.html?id=${id}"
+         style="display:flex;align-items:center;gap:12px;background:var(--bg-card);border:1.5px solid var(--border);
+                border-radius:var(--r-lg);padding:12px;transition:var(--transition)"
+         onmouseover="this.style.borderColor='var(--accent)'"
+         onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:56px;height:56px;background:linear-gradient(135deg,#162030,#1a2d42);border-radius:var(--r);
+                    display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;
+                    position:relative;overflow:hidden">
+          <img src="${s.image||''}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">
+          ${s.emoji}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
+          <div style="font-size:.75rem;color:var(--text-muted)">${s.category} · <span style="color:${s.avail==='free'?'var(--success)':'var(--warn)'}">${AVAIL_LABEL[s.avail]}</span></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="color:var(--accent);font-weight:800;font-size:.9rem">${fmt(s.price1)}</div>
+          <div style="font-size:.7rem;color:var(--text-dim)">/сут</div>
+        </div>
+      </a>`;
+  }).join('');
+
+  recalc(p);
+  window._currentProduct = p;
+}
+
+/* ═══════════════════════════════════════════
+   REVIEWS (статические + из IndexedDB)
+═══════════════════════════════════════════ */
+let _selectedStars = 5;
+
+async function loadReviews(p) {
+  const list = document.getElementById('reviewsList');
+  const titleEl  = document.getElementById('reviewsTitle');
+  const ratingEl = document.getElementById('reviewsRating');
+
+  const dbRevs = await dbGetReviews(p.id || urlId).catch(() => []);
+  const staticRevs = (p.reviews || []).map(r => ({
+    ...r, source: 'static', createdAt: null
+  }));
+  const all = [...staticRevs, ...dbRevs];
+
+  const total = (p.reviewCount || 0) + dbRevs.length;
+  titleEl.textContent  = `Отзывы (${total})`;
+  ratingEl.textContent = `${'★'.repeat(Math.round(p.rating))} ${p.rating}`;
+
+  if (!all.length) {
+    list.innerHTML = '<div style="color:var(--text-muted);font-size:.88rem;padding:12px 0">Отзывов пока нет. Будьте первым!</div>';
+  } else {
+    list.innerHTML = all.map((r, i) => {
+      const initials = r.initials || (r.userName ? r.userName.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() : '?');
+      const date     = r.date || (r.createdAt ? new Date(r.createdAt).toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'}) : '');
+      const name     = r.name || r.userName || 'Пользователь';
+      const color    = r.color || 'background:linear-gradient(135deg,#3b82f6,#8b5cf6)';
+      const stars    = r.stars || 5;
+      return `
+        <div ${i>0?'style="border-top:1px solid var(--border);padding-top:14px;margin-top:8px"':''}>
+          <div class="review-head">
+            <div class="reviewer">
+              <div class="avatar" style="${color}">${initials}</div>
+              <div><div class="reviewer-name">${name}</div><div class="reviewer-date">${date}</div></div>
+            </div>
+            <div class="review-stars">${'★'.repeat(stars)}${'☆'.repeat(5-stars)}</div>
+          </div>
+          <div class="review-text">${r.text}</div>
+        </div>`;
+    }).join('');
+  }
+
+  /* Показываем форму если залогинен */
+  if (isLoggedIn()) {
+    document.getElementById('reviewFormWrap').style.display = '';
+  } else {
+    document.getElementById('reviewLoginHint').style.display = '';
+  }
+}
+
+function selectStar(n) {
+  _selectedStars = n;
+  paintStars(n);
+}
+
+function paintStars(n) {
+  document.querySelectorAll('.star-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.val) <= n);
+  });
+}
+
+/* Hover-preview звёзд */
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.star-btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => paintStars(parseInt(btn.dataset.val)));
+    btn.addEventListener('mouseleave', () => paintStars(_selectedStars));
+  });
+});
+
+async function submitReview() {
+  const text    = document.getElementById('reviewText').value.trim();
+  const errEl   = document.getElementById('reviewError');
+  errEl.style.display = 'none';
+
+  if (!text) {
+    errEl.textContent = 'Напишите текст отзыва';
+    errEl.style.display = '';
+    return;
+  }
+  if (!isLoggedIn()) {
+    errEl.textContent = 'Необходимо войти в аккаунт';
+    errEl.style.display = '';
+    return;
+  }
+  const u = getCurrentUser();
+  try {
+    await dbAddReview(urlId, u.email, u.firstName + ' ' + (u.lastName || ''), _selectedStars, text);
+    document.getElementById('reviewText').value = '';
+    selectStar(5);
+    showToast('✓ Отзыв опубликован!');
+    await loadReviews(window._currentProduct);
+  } catch(e) {
+    errEl.textContent = 'Ошибка сохранения отзыва';
+    errEl.style.display = '';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   THUMB SWITCH
+═══════════════════════════════════════════ */
+function switchThumb(el, src, idx) {
+  document.querySelectorAll('.item-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const img      = document.getElementById('mainImg');
+  const bigEmoji = document.getElementById('mainEmoji');
+  img.src        = src;
+  img.style.display  = '';
+  bigEmoji.style.display = 'none';
+  img.addEventListener('imgallfailed', () => { bigEmoji.style.display = ''; }, { once: true });
+  _lbIdx = idx || 0;
+  /* Если клик второй раз на ту же активную миниатюру — открыть лайтбокс */
+  if (el.classList.contains('was-active')) {
+    openLightbox(_lbIdx);
+  }
+  document.querySelectorAll('.item-thumb').forEach(t => t.classList.remove('was-active'));
+  el.classList.add('was-active');
+}
+
+/* ═══════════════════════════════════════════
+   PRICE CALC
+═══════════════════════════════════════════ */
+function recalc(p) {
+  const s    = new Date(document.getElementById('dateFrom').value);
+  const e    = new Date(document.getElementById('dateTo').value);
+  if (isNaN(s) || isNaN(e) || e <= s) return;
+  const days  = Math.max(1, Math.round((e - s) / 86400000));
+  const rate  = days >= 2 ? p.price2 : p.price1;
+  const base  = rate * days;
+  const disc  = days >= 2 ? (p.price1 - p.price2) * days : 0;
+  const dep   = parseInt(document.getElementById('depositAmt').textContent.replace(/\D/g,'')) || 5000;
+  const total = base + dep - disc;
+  const dw    = days === 1 ? 'сутки' : 'суток';
+
+  document.getElementById('calcLine').textContent  = `${rate.toLocaleString('ru')} ₽ × ${days} ${dw}`;
+  document.getElementById('calcBase').textContent  = fmt(base);
+  document.getElementById('calcDisc').textContent  = disc > 0 ? `−${fmt(disc)}` : '—';
+  document.getElementById('calcTotal').textContent = fmt(total);
+  document.getElementById('modalPrice').textContent = fmt(total);
+
+  const opts = { day:'numeric', month:'long', year:'numeric' };
+  document.getElementById('modalDates').textContent =
+    `${s.toLocaleDateString('ru',opts)} – ${e.toLocaleDateString('ru',opts)} · ${days} ${dw}`;
+}
+
+document.querySelectorAll('#dateFrom,#dateTo').forEach(i =>
+  i.addEventListener('change', () => recalc(window._currentProduct))
+);
+
+/* ═══════════════════════════════════════════
+   ADD TO CART
+═══════════════════════════════════════════ */
+function addItemToCart(p) {
+  const s    = new Date(document.getElementById('dateFrom').value);
+  const e    = new Date(document.getElementById('dateTo').value);
+  const days = Math.max(1, Math.round((e - s) / 86400000));
+  addToCart(urlId, p.name, p.emoji, p.price1, p.price2, days);
+  document.getElementById('addedModal').classList.add('open');
+}
+function closeAddedModal() { document.getElementById('addedModal').classList.remove('open'); }
+document.getElementById('addedModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('addedModal')) closeAddedModal();
+});
+function showModal() {
+  const p = window._currentProduct;
+  if (!p || p.avail !== 'free') return;
+  addItemToCart(p);
+}
+
+/* ═══════════════════════════════════════════
+   FAVORITES
+═══════════════════════════════════════════ */
+function toggleItemFav() {
+  const btn     = document.getElementById('favBtn');
+  const favList = JSON.parse(localStorage.getItem('mr_favs') || '[]');
+  const idx     = favList.indexOf(urlId);
+  if (idx === -1) {
+    favList.push(urlId);
+    btn.innerHTML = '♥ В избранном';
+    btn.style.color        = '#ef4444';
+    btn.style.borderColor  = 'rgba(239,68,68,.4)';
+    btn.style.background   = 'rgba(239,68,68,.08)';
+    showToast('♥ Добавлено в избранное');
+  } else {
+    favList.splice(idx, 1);
+    btn.innerHTML = '♡ В избранное';
+    btn.style.color        = '';
+    btn.style.borderColor  = '';
+    btn.style.background   = '';
+  }
+  localStorage.setItem('mr_favs', JSON.stringify(favList));
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+const urlId = new URLSearchParams(window.location.search).get('id') || 'gibson-les-paul';
+
+document.addEventListener('DOMContentLoaded', async () => {
+  /* Подождём auth */
+  if (window.authReady) await window.authReady;
+
+  /* Загрузим из DB (с fallback на статику) */
+  const product = await dbGetEquipment(urlId).catch(() => null)
+    || PRODUCTS[urlId]
+    || PRODUCTS['gibson-les-paul'];
+
+  const p = { ...product, id: product.id || urlId };
+  render(p);
+  await loadReviews(p);
+
+  /* Настройки залога */
+  const deposit = await dbGetSetting('deposit', 5000).catch(() => 5000);
+  document.getElementById('depositAmt').textContent = Number(deposit).toLocaleString('ru') + ' ₽';
+  recalc(p);
+
+  /* Восстановить избранное */
+  const favList = JSON.parse(localStorage.getItem('mr_favs') || '[]');
+  const btn = document.getElementById('favBtn');
+  if (btn && favList.includes(urlId)) {
+    btn.innerHTML = '♥ В избранном';
+    btn.style.color       = '#ef4444';
+    btn.style.borderColor = 'rgba(239,68,68,.4)';
+    btn.style.background  = 'rgba(239,68,68,.08)';
+  }
+});
+</script>
+</body>
+</html>

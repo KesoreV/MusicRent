@@ -1,0 +1,69 @@
+======================================
+  MusicRent — Список нужных фотографий
+======================================
+
+ФОРМАТ: WebP, JPG или PNG — любой!
+Сайт сам определит нужный формат.
+Порядок попытки: .webp → .jpg → .jpeg → .png
+Если ни одного нет — показывается эмодзи-заглушка.
+
+НАЗЫВАЙ ФАЙЛЫ ТОЧНО КАК НАПИСАНО НИЖЕ.
+(расширение .webp или .jpg — без разницы)
+
+======================================
+НУЖНО 21 ФОТО:
+======================================
+
+ГИТАРЫ:
+  gibson-les-paul.webp   (или .jpg)  — Gibson Les Paul Standard
+  fender-strat.webp      (или .jpg)  — Fender Stratocaster MIM
+
+УДАРНЫЕ:
+  pearl-export.webp      (или .jpg)  — Pearl Export 5-Piece
+  roland-td17.webp       (или .jpg)  — Roland TD-17KVX
+
+КЛАВИШНЫЕ:
+  roland-juno.webp       (или .jpg)  — Roland JUNO-DS88
+  yamaha-p125.webp       (или .jpg)  — Yamaha P-125
+
+УСИЛИТЕЛИ:
+  marshall-dsl.webp      (или .jpg)  — Marshall DSL40CR
+  fender-twin.webp       (или .jpg)  — Fender Twin Reverb
+
+МИКРОФОНЫ:
+  shure-sm58.webp        (или .jpg)  — Shure SM58 + Стойка
+  rode-nt1a.webp         (или .jpg)  — Rode NT1-A + Focusrite
+
+DJ-ОБОРУДОВАНИЕ:
+  pioneer-ddj.webp       (или .jpg)  — Pioneer DDJ-FLX6
+  pioneer-djm.webp       (или .jpg)  — Pioneer DJM-250MK2
+
+СВЕТОВОЕ:
+  led-par-set.webp       (или .jpg)  — Набор LED PAR 8 шт.
+  chauvet-spot.webp      (или .jpg)  — Chauvet DJ Spot 160
+
+ДУХОВЫЕ:
+  yamaha-trumpet.webp    (или .jpg)  — Yamaha YTR-2330 Труба
+  jupiter-sax.webp       (или .jpg)  — Jupiter JAS-567 Саксофон
+
+АКУСТИКА:
+  qsc-k12.webp           (или .jpg)  — QSC K12.2
+  yamaha-dxr12.webp      (или .jpg)  — Yamaha DXR12mkII
+
+ЗВУКОВЫЕ КАРТЫ:
+  focusrite-scarlett.webp (или .jpg) — Focusrite Scarlett 2i2
+  behringer-umc.webp     (или .jpg)  — Behringer UMC202HD
+
+ГЛАВНАЯ СТРАНИЦА:
+  hero-guitar.webp       (или .jpg)  — Красивая гитара для баннера
+
+======================================
+ГДЕ БРАТЬ БЕСПЛАТНЫЕ ФОТО:
+  unsplash.com   — поиск: "electric guitar", "drum kit", "synthesizer"
+  pexels.com     — то же самое
+  pixabay.com    — поиск на русском тоже работает
+
+ИЛИ официальные пресс-киты производителей:
+  gibson.com/press  |  fender.com  |  roland.com
+  yamaha.com        |  shure.com   |  pioneer-dj.com
+======================================

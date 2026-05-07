@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Войти — MusicRent</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden">
+  <div style="position:absolute;top:-200px;left:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,.1) 0%,transparent 65%);border-radius:50%"></div>
+  <div style="position:absolute;bottom:-150px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(129,140,248,.08) 0%,transparent 65%);border-radius:50%"></div>
+</div>
+
+<div class="auth-wrap" style="position:relative;z-index:1">
+  <div class="auth-panel">
+
+    <!-- LEFT -->
+    <div class="auth-left">
+      <div class="nav-logo" style="justify-content:flex-start">
+        <div class="logo-box">🎸</div>
+        MusicRent
+      </div>
+      <div>
+        <div class="auth-left-title">Твоя музыка<br>начинается здесь</div>
+        <div class="auth-left-sub">Профессиональное оборудование для концертов, репетиций и мероприятий любого масштаба.</div>
+        <div class="auth-perks">
+          <div class="auth-perk"><span class="tick">✓</span> Мгновенное бронирование онлайн</div>
+          <div class="auth-perk"><span class="tick">✓</span> Более 200 единиц оборудования</div>
+          <div class="auth-perk"><span class="tick">✓</span> Рейтинг 4.9 / 5 от клиентов</div>
+          <div class="auth-perk"><span class="tick">✓</span> Залог возвращается при сдаче</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="display:flex">
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#818cf8);border:2px solid #1e3050;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;margin-right:-7px">АК</div>
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#10b981,#3b82f6);border:2px solid #1e3050;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;margin-right:-7px">МИ</div>
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ef4444);border:2px solid #1e3050;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700">ДП</div>
+        </div>
+        <span style="font-size:.78rem;color:#93c5fd">487 музыкантов уже с нами</span>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="auth-right">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Войти</button>
+        <button class="auth-tab" id="tabReg" onclick="switchTab('register')">Регистрация</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="formLogin">
+        <div style="font-size:1.2rem;font-weight:800;margin-bottom:4px">С возвращением!</div>
+        <div style="color:var(--text-muted);font-size:.85rem;margin-bottom:20px">Войдите в свой аккаунт</div>
+        <form class="auth-form" onsubmit="doLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-control" id="loginEmail" type="email" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="display:flex;justify-content:space-between">
+              Пароль <a href="#" style="color:var(--accent);font-size:.78rem">Забыли пароль?</a>
+            </label>
+            <div style="position:relative">
+              <input class="form-control" id="pwdLogin" type="password" placeholder="Ваш пароль" required>
+              <button type="button" onclick="togglePwd('pwdLogin')" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.85rem">👁</button>
+            </div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.83rem;color:var(--text-muted);cursor:pointer">
+            <input type="checkbox" style="accent-color:var(--accent)"> Запомнить меня
+          </label>
+          <div id="loginError" style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;padding:9px 13px;border-radius:var(--r);font-size:.83rem"></div>
+          <button class="btn btn-primary" type="submit" style="width:100%;padding:12px;justify-content:center">Войти в аккаунт</button>
+        </form>
+        <div class="auth-hint">
+          Демо для проверки: <strong>admin@musicrent.ru</strong> / <strong>admin123</strong><br>
+          <a href="admin.html">→ Открыть панель администратора</a>
+        </div>
+        <div class="auth-switch">Нет аккаунта? <a href="#" onclick="switchTab('register')">Зарегистрироваться</a></div>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="formRegister" style="display:none">
+        <div style="font-size:1.2rem;font-weight:800;margin-bottom:4px">Создать аккаунт</div>
+        <div style="color:var(--text-muted);font-size:.85rem;margin-bottom:20px">Присоединяйтесь к MusicRent</div>
+        <form class="auth-form" onsubmit="doRegister(event)">
+          <div class="name-grid">
+            <div class="form-group">
+              <label class="form-label">Имя</label>
+              <input class="form-control" id="regFirstName" placeholder="Иван" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Фамилия</label>
+              <input class="form-control" id="regLastName" placeholder="Иванов">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-control" id="regEmail" type="email" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Телефон</label>
+            <input class="form-control" id="regPhone" type="tel" placeholder="+7 (___) ___-__-__">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Пароль</label>
+            <div style="position:relative">
+              <input class="form-control" id="pwdReg" type="password" placeholder="Придумайте пароль" required>
+              <button type="button" onclick="togglePwd('pwdReg')" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.85rem">👁</button>
+            </div>
+          </div>
+          <label style="display:flex;align-items:flex-start;gap:8px;font-size:.8rem;color:var(--text-muted);cursor:pointer">
+            <input type="checkbox" id="regTerms" style="accent-color:var(--accent);margin-top:2px;flex-shrink:0" required>
+            Принимаю <a href="#" style="color:var(--accent)">условия использования</a> и <a href="#" style="color:var(--accent)">политику конфиденциальности</a>
+          </label>
+          <div id="regError" style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;padding:9px 13px;border-radius:var(--r);font-size:.83rem"></div>
+          <button class="btn btn-primary" type="submit" style="width:100%;padding:12px;justify-content:center">Создать аккаунт</button>
+        </form>
+        <div class="auth-switch">Уже есть аккаунт? <a href="#" onclick="switchTab('login')">Войти</a></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:16px;font-size:.78rem;color:var(--text-dim)">
+    <a href="index.html" style="color:var(--text-dim)">← Вернуться на главную</a>
+    &nbsp;·&nbsp;
+    © 2026 MusicRent · Дипломный проект · Данилов Я.А. · ИП-41
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="data.js"></script>
+<script src="db.js"></script>
+<script src="auth.js"></script>
+<script src="cursor.js"></script>
+<script src="modals.js"></script>
+<script>
+  // Если уже залогинен — редиректим
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (window.authReady) await window.authReady;
+    if (isLoggedIn()) window.location.href = 'index.html';
+  });
+
+  function switchTab(tab) {
+    const login = tab === 'login';
+    document.getElementById('formLogin').style.display    = login ? '' : 'none';
+    document.getElementById('formRegister').style.display = login ? 'none' : '';
+    document.getElementById('tabLogin').className = 'auth-tab' + (login ? ' active' : '');
+    document.getElementById('tabReg').className   = 'auth-tab' + (login ? '' : ' active');
+  }
+
+  function togglePwd(id) {
+    const i = document.getElementById(id);
+    i.type = i.type === 'password' ? 'text' : 'password';
+  }
+
+  function setBtn(id, loading) {
+    const btn = document.querySelector(loading
+      ? `#form${id.charAt(0).toUpperCase()+id.slice(1)} button[type=submit]`
+      : `#form${id.charAt(0).toUpperCase()+id.slice(1)} button[type=submit]`);
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.dataset.orig = btn.dataset.orig || btn.textContent;
+    btn.textContent = loading ? '⏳ Подождите...' : btn.dataset.orig;
+  }
+
+  async function doLogin(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('loginError');
+    errEl.style.display = 'none';
+    const btn = e.submitter || e.target.querySelector('button[type=submit]');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Входим...'; }
+    const email    = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('pwdLogin').value;
+    const result   = await loginUser(email, password);
+    if (!result.success) {
+      errEl.textContent = result.error;
+      errEl.style.display = '';
+      if (btn) { btn.disabled = false; btn.textContent = 'Войти в аккаунт'; }
+      return;
+    }
+    window.location.href = result.user.role === 'admin' ? 'admin.html' : 'index.html';
+  }
+
+  async function doRegister(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('regError');
+    errEl.style.display = 'none';
+    const btn = e.submitter || e.target.querySelector('button[type=submit]');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Создаём аккаунт...'; }
+    const firstName = document.getElementById('regFirstName').value.trim();
+    const lastName  = document.getElementById('regLastName').value.trim();
+    const email     = document.getElementById('regEmail').value.trim();
+    const phone     = document.getElementById('regPhone').value.trim();
+    const password  = document.getElementById('pwdReg').value;
+    if (password.length < 4) {
+      errEl.textContent = 'Пароль должен быть не менее 4 символов';
+      errEl.style.display = '';
+      if (btn) { btn.disabled = false; btn.textContent = 'Создать аккаунт'; }
+      return;
+    }
+    const result = await registerUser(firstName, lastName, email, phone, password);
+    if (!result.success) {
+      errEl.textContent = result.error;
+      errEl.style.display = '';
+      if (btn) { btn.disabled = false; btn.textContent = 'Создать аккаунт'; }
+      return;
+    }
+    window.location.href = 'index.html';
+  }
+</script>
+</body>
+</html>
