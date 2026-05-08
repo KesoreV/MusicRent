@@ -13,14 +13,53 @@
   ].join(';');
   document.body.appendChild(ripple);
 
-  /* ── Анимация появления страницы (только opacity — transform ломает position:fixed) ── */
-  document.body.style.opacity = '0';
-  document.body.style.transition = 'opacity .38s ease';
-  requestAnimationFrame(function () {
+  /* ── Анимация появления страницы ── */
+  var _entryData = sessionStorage.getItem('_rippleExit');
+
+  if (_entryData) {
+    /* Синий круг сужается в точку (обратный ripple) */
+    sessionStorage.removeItem('_rippleExit');
+    var _pos  = JSON.parse(_entryData);
+    var _ex   = _pos.x, _ey = _pos.y;
+    var _dx   = Math.max(_ex, window.innerWidth  - _ex);
+    var _dy   = Math.max(_ey, window.innerHeight - _ey);
+    var _size = Math.sqrt(_dx * _dx + _dy * _dy) * 2.2;
+
+    /* Создаём сплошной круг на весь экран */
+    var _entry = document.createElement('div');
+    _entry.style.cssText = [
+      'position:fixed', 'border-radius:50%', 'pointer-events:none', 'z-index:99998',
+      'background:linear-gradient(135deg,#3b82f6,#818cf8)',
+      'width:'  + _size + 'px',
+      'height:' + _size + 'px',
+      'left:'   + (_ex - _size / 2) + 'px',
+      'top:'    + (_ey - _size / 2) + 'px',
+      'transform:scale(1)',
+      'transition:transform .52s cubic-bezier(.4,0,.2,1)',
+    ].join(';');
+    document.body.appendChild(_entry);
+
+    /* Страница сразу видна под кругом */
+    document.body.style.opacity = '1';
+
+    /* Запускаем сужение круга */
     requestAnimationFrame(function () {
-      document.body.style.opacity = '1';
+      requestAnimationFrame(function () {
+        _entry.style.transform = 'scale(0)';
+        setTimeout(function () { _entry.remove(); }, 560);
+      });
     });
-  });
+
+  } else {
+    /* Обычная загрузка — просто fade-in */
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity .38s ease';
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        document.body.style.opacity = '1';
+      });
+    });
+  }
 
   /* ── Ripple-навигация ── */
   function rippleNavigate(x, y, url) {
@@ -41,6 +80,7 @@
     ripple.style.transition = 'transform .55s cubic-bezier(.4,0,.2,1), opacity .1s';
     ripple.style.transform  = 'scale(1)';
 
+    sessionStorage.setItem('_rippleExit', JSON.stringify({ x: x, y: y }));
     setTimeout(function () { window.location.href = url; }, 500);
   }
 
