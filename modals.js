@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════
    MusicRent — Общие модалы и рабочие ссылки
    Загружать: <script src="modals.js"></script>
 ════════════════════════════════════════════════════════ */
@@ -181,10 +181,6 @@ const MODALS_HTML = `
   <div class="float-btn-wrap">
     <span class="float-label">Написать в Telegram</span>
     <a class="float-btn float-btn-tg" href="https://t.me/musicrent_amur" target="_blank" rel="noopener" title="Telegram">✈️</a>
-  </div>
-  <div class="float-btn-wrap">
-    <span class="float-label">Написать в WhatsApp</span>
-    <a class="float-btn float-btn-wa" href="https://wa.me/74162000000" target="_blank" rel="noopener" title="WhatsApp">💬</a>
   </div>
   <div class="float-btn-wrap">
     <span class="float-label">Заказать звонок</span>
@@ -383,13 +379,7 @@ function fixAllLinks() {
       return;
     }
 
-    /* WhatsApp */
-    if (text.includes('WhatsApp') || text.includes('📱')) {
-      a.href   = 'https://wa.me/74162000000';
-      a.target = '_blank';
-      a.rel    = 'noopener';
-      return;
-    }
+    
 
     /* О сервисе / О нас */
     if (text.includes('О сервисе') || text === 'О нас') {
