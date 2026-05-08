@@ -38,6 +38,11 @@ function getItemRate(item) {
 
 /* ─── add / remove ─── */
 function addToCart(id, name, emoji, price1, price2, days) {
+  if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
+    showToast('🔒 Войдите в аккаунт, чтобы добавить в корзину');
+    setTimeout(() => { window.location.href = 'login.html'; }, 1400);
+    return;
+  }
   days = parseInt(days) || 1;
   const cart = loadCart();
   const existing = cart.find(i => i.id === id);
@@ -263,6 +268,11 @@ function initFavorites() {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
+      if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
+        showToast('🔒 Войдите в аккаунт, чтобы добавить в избранное');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1400);
+        return;
+      }
       const favList = JSON.parse(localStorage.getItem('mr_favs') || '[]');
       const cardEl  = this.closest('.product-card');
       const pid     = cardEl ? new URL(cardEl.href, location.href).searchParams.get('id') : null;

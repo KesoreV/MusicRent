@@ -627,6 +627,11 @@ function showModal() {
    FAVORITES
 ═══════════════════════════════════════════ */
 function toggleItemFav() {
+  if (!isLoggedIn()) {
+    showToast('🔒 Войдите в аккаунт, чтобы добавить в избранное');
+    setTimeout(() => { window.location.href = 'login.html'; }, 1400);
+    return;
+  }
   const btn     = document.getElementById('favBtn');
   const favList = JSON.parse(localStorage.getItem('mr_favs') || '[]');
   const idx     = favList.indexOf(urlId);
