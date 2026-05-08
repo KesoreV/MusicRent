@@ -206,6 +206,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  /* Маски телефона */
+  applyPhoneMasks();
+
   /* Закрытие по Escape */
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
@@ -227,6 +230,54 @@ function openInfoModal(id) {
 function closeInfoModal(id) {
   var el = document.getElementById(id);
   if (el) el.classList.remove('open');
+}
+
+/* ══════════════════════════════════════════════
+   МАСКА ТЕЛЕФОНА  +7 (XXX) XXX-XX-XX
+══════════════════════════════════════════════ */
+function initPhoneMask(el) {
+  if (!el || el.dataset.phoneMask) return;
+  el.dataset.phoneMask = '1';
+  el.setAttribute('placeholder', '+7 (___) ___-__-__');
+  el.setAttribute('maxlength', '18');
+  el.setAttribute('inputmode', 'tel');
+
+  function applyMask() {
+    var raw = el.value.replace(/\D/g, '');
+
+    /* Убираем ведущие 7 или 8 — они заменяются на +7 */
+    if (raw.charAt(0) === '7' || raw.charAt(0) === '8') raw = raw.slice(1);
+    raw = raw.slice(0, 10);
+
+    var out = '+7';
+    if (raw.length > 0) out += ' (' + raw.slice(0, 3);
+    if (raw.length >= 3) out += ') ' + raw.slice(3, 6);
+    if (raw.length >= 6) out += '-' + raw.slice(6, 8);
+    if (raw.length >= 8) out += '-' + raw.slice(8, 10);
+
+    el.value = out;
+  }
+
+  el.addEventListener('input',   applyMask);
+  el.addEventListener('paste',   function() { setTimeout(applyMask, 0); });
+  el.addEventListener('focus',   function() { if (!el.value) el.value = '+7 ('; });
+  el.addEventListener('blur',    function() { if (el.value === '+7 (' || el.value === '+7') el.value = ''; });
+  el.addEventListener('keydown', function(e) {
+    /* Разрешаем стереть +7 ( целиком при Backspace в начале */
+    if (e.key === 'Backspace' && (el.value === '+7 (' || el.value === '+7')) {
+      el.value = '';
+      e.preventDefault();
+    }
+  });
+}
+
+function validatePhone(val) {
+  return val.replace(/\D/g, '').length === 11;
+}
+
+/* Применяем маску ко всем телефонным полям на странице */
+function applyPhoneMasks() {
+  document.querySelectorAll('input[type="tel"], input[id*="hone"], input[id*="Phone"]').forEach(initPhoneMask);
 }
 
 /* Устанавливаем класс body.is-logged-in */
@@ -334,6 +385,11 @@ function fixAllLinks() {
    ОБРАТНЫЙ ЗВОНОК
 ══════════════════════════════════════════════ */
 function openCallbackModal() {
+  /* Инициализируем маску после открытия (поле уже в DOM) */
+  setTimeout(function() {
+    var ph = document.getElementById('cbPhone');
+    if (ph) initPhoneMask(ph);
+  }, 50);
   /* Сбрасываем форму */
   var fw = document.getElementById('callbackFormWrap');
   var sw = document.getElementById('callbackSuccessWrap');
@@ -360,9 +416,10 @@ async function submitCallback() {
   var comment= (document.getElementById('cbComment').value || '').trim();
   errEl.style.display = 'none';
 
-  if (!phone || phone.replace(/\D/g,'').length < 10) {
-    errEl.textContent = 'Введите корректный номер телефона';
+  if (!validatePhone(phone)) {
+    errEl.textContent = 'Введите корректный номер: +7 (XXX) XXX-XX-XX';
     errEl.style.display = '';
+    document.getElementById('cbPhone').focus();
     return;
   }
 
