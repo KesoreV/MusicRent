@@ -59,15 +59,15 @@
   <div>
     <div class="hero-badge">🎵 Профессиональное оборудование в аренду</div>
     <h1>Возьми в аренду<br><em>любой инструмент</em><br>для выступления</h1>
-    <p class="hero-sub">Более 200 единиц профессионального музыкального оборудования — гитары, ударные, синтезаторы, световое и звуковое оборудование. Бронирование онлайн за 2 минуты.</p>
+    <p class="hero-sub">Профессиональное музыкальное оборудование в аренду — гитары, ударные, синтезаторы, световое и звуковое оборудование. Бронирование онлайн за 2 минуты.</p>
     <div class="hero-btns">
       <a class="btn btn-primary btn-lg" href="catalog.html">Перейти в каталог</a>
       <a class="btn btn-outline btn-lg" href="#how">Как это работает</a>
     </div>
     <div class="hero-stats">
-      <div><div class="hs-val">200+</div><div class="hs-lbl">единиц оборудования</div></div>
-      <div><div class="hs-val">1 200+</div><div class="hs-lbl">выполненных заказов</div></div>
-      <div><div class="hs-val">4.9 ★</div><div class="hs-lbl">средний рейтинг</div></div>
+      <div><div class="hs-val" id="heroStatEq">—</div><div class="hs-lbl">единиц оборудования</div></div>
+      <div><div class="hs-val" id="heroStatOrd">—</div><div class="hs-lbl">выполненных заказов</div></div>
+      <div><div class="hs-val" id="heroStatRating">—</div><div class="hs-lbl">средний рейтинг</div></div>
     </div>
   </div>
   <div class="hero-visual">
@@ -97,14 +97,14 @@
 <!-- CAT CHIPS ROW -->
 <div class="section" style="padding-top:0;padding-bottom:32px">
   <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <a href="catalog.html?cat=guitars" class="chip active">🎸 Гитары <span class="chip-count">48</span></a>
-    <a href="catalog.html?cat=drums" class="chip">🥁 Ударные <span class="chip-count">22</span></a>
-    <a href="catalog.html?cat=keys" class="chip">🎹 Клавишные <span class="chip-count">31</span></a>
-    <a href="catalog.html?cat=brass" class="chip">🎺 Духовые <span class="chip-count">17</span></a>
-    <a href="catalog.html?cat=amps" class="chip">🔊 Усилители <span class="chip-count">36</span></a>
-    <a href="catalog.html?cat=mics" class="chip">🎤 Микрофоны <span class="chip-count">29</span></a>
-    <a href="catalog.html?cat=light" class="chip">💡 Световое <span class="chip-count">14</span></a>
-    <a href="catalog.html?cat=dj" class="chip">🎛️ DJ-оборудование <span class="chip-count">20</span></a>
+    <a href="catalog.html?cat=guitars" class="chip active">🎸 Гитары </a>
+    <a href="catalog.html?cat=drums" class="chip">🥁 Ударные </a>
+    <a href="catalog.html?cat=keys" class="chip">🎹 Клавишные </a>
+    <a href="catalog.html?cat=brass" class="chip">🎺 Духовые </a>
+    <a href="catalog.html?cat=amps" class="chip">🔊 Усилители </a>
+    <a href="catalog.html?cat=mics" class="chip">🎤 Микрофоны </a>
+    <a href="catalog.html?cat=light" class="chip">💡 Световое </a>
+    <a href="catalog.html?cat=dj" class="chip">🎛️ DJ-оборудование </a>
   </div>
 </div>
 
@@ -356,41 +356,10 @@
   <div class="section-hd">
     <div>
       <div class="section-title">Отзывы клиентов</div>
-      <div class="section-sub">500+ отзывов · Рейтинг 4.9 / 5</div>
+      <div class="section-sub" id="reviewsSubtitle">Загрузка...</div>
     </div>
   </div>
-  <div class="reviews-grid">
-    <div class="review-item">
-      <div class="review-head">
-        <div class="reviewer">
-          <div class="avatar">АК</div>
-          <div><div class="reviewer-name">Алексей Козлов</div><div class="reviewer-date">12 января 2026</div></div>
-        </div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-      <div class="review-text">«Брал Gibson Les Paul на концерт — гитара в идеальном состоянии. Звук тёплый, насыщенный. Персонал помог с настройкой. Обязательно вернусь!»</div>
-    </div>
-    <div class="review-item">
-      <div class="review-head">
-        <div class="reviewer">
-          <div class="avatar" style="background:linear-gradient(135deg,#10b981,#3b82f6)">МС</div>
-          <div><div class="reviewer-name">Мария Смирнова</div><div class="reviewer-date">5 февраля 2026</div></div>
-        </div>
-        <div class="review-stars">★★★★★</div>
-      </div>
-      <div class="review-text">«Арендовали световой набор на корпоратив. Быстро оформили заказ через сайт, всё приехало вовремя. Очень удобная система бронирования.»</div>
-    </div>
-    <div class="review-item">
-      <div class="review-head">
-        <div class="reviewer">
-          <div class="avatar" style="background:linear-gradient(135deg,#8b5cf6,#ef4444)">ДП</div>
-          <div><div class="reviewer-name">Дмитрий Петров</div><div class="reviewer-date">18 февраля 2026</div></div>
-        </div>
-        <div class="review-stars" style="color:#fbbf24">★★★★☆</div>
-      </div>
-      <div class="review-text">«Pioneer DDJ взял на вечеринку — всё отлично. Немного долго ждал подтверждения, но в целом сервис хороший. Буду рекомендовать друзьям.»</div>
-    </div>
-  </div>
+  <div id="mainReviewsGrid" class="reviews-grid"></div>
 </div>
 
 <!-- CTA -->
@@ -614,6 +583,69 @@ function toggleFaq(qEl) {
   document.querySelectorAll('.faq-item.open').forEach(function(el) { el.classList.remove('open'); });
   if (!isOpen) item.classList.add('open');
 }
+
+/* ── Реальная статистика и отзывы из БД ── */
+document.addEventListener('DOMContentLoaded', async function() {
+  if (window.authReady) await window.authReady;
+
+  /* Статистика */
+  try {
+    const eqCount = typeof PRODUCTS !== 'undefined' ? Object.keys(PRODUCTS).length : 0;
+    document.getElementById('heroStatEq').textContent = eqCount + '+';
+
+    const orders = await dbGetAll('orders').catch(() => []);
+    const doneOrders = orders.filter(o => o.status === 'completed' || o.status === 'active').length;
+    document.getElementById('heroStatOrd').textContent = doneOrders > 0 ? doneOrders + '+' : '0';
+
+    const reviews = await dbGetAll('reviews').catch(() => []);
+    if (reviews.length > 0) {
+      const avg = (reviews.reduce((s, r) => s + (r.stars || 5), 0) / reviews.length).toFixed(1);
+      document.getElementById('heroStatRating').textContent = avg + ' ★';
+    } else {
+      document.getElementById('heroStatRating').textContent = '— ★';
+    }
+  } catch(e) {}
+
+  /* Отзывы на главной из БД */
+  try {
+    const reviews = await dbGetAll('reviews').catch(() => []);
+    const grid    = document.getElementById('mainReviewsGrid');
+    const subtitle = document.getElementById('reviewsSubtitle');
+    if (!reviews.length) {
+      subtitle.textContent = 'Отзывов пока нет — будьте первым!';
+      grid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:48px 20px;color:var(--text-muted)">
+          <div style="font-size:2.5rem;margin-bottom:12px">💬</div>
+          <div style="font-weight:700;margin-bottom:6px">Отзывов пока нет</div>
+          <div style="font-size:.88rem">Возьмите оборудование в аренду и оставьте первый отзыв!</div>
+          <a href="catalog.html" class="btn btn-outline btn-sm" style="margin-top:16px">Перейти в каталог</a>
+        </div>`;
+    } else {
+      const latest = reviews.slice(-6).reverse();
+      subtitle.textContent = reviews.length + ' ' + (reviews.length === 1 ? 'отзыв' : reviews.length < 5 ? 'отзыва' : 'отзывов');
+      grid.innerHTML = latest.map(r => {
+        const initials = (r.userName || '??').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+        const stars    = '★'.repeat(r.stars || 5) + '☆'.repeat(5 - (r.stars || 5));
+        const eq       = (typeof PRODUCTS !== 'undefined' && PRODUCTS[r.equipmentId]) ? PRODUCTS[r.equipmentId].name : r.equipmentId;
+        const date     = r.createdAt ? new Date(r.createdAt).toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'}) : '';
+        return `
+          <div class="review-item">
+            <div class="review-head">
+              <div class="reviewer">
+                <div class="avatar">${initials}</div>
+                <div>
+                  <div class="reviewer-name">${r.userName || 'Пользователь'}</div>
+                  <div class="reviewer-date">${eq} · ${date}</div>
+                </div>
+              </div>
+              <div class="review-stars">${stars}</div>
+            </div>
+            <div class="review-text">«${r.text}»</div>
+          </div>`;
+      }).join('');
+    }
+  } catch(e) {}
+});
 
 /* ── Анимация шагов при прокрутке ── */
 (function() {
