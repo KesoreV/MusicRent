@@ -242,33 +242,80 @@ function initPhoneMask(el) {
   el.setAttribute('maxlength', '18');
   el.setAttribute('inputmode', 'tel');
 
-  function applyMask() {
+  /* Позиции цифр в строке "+7 (XXX) XXX-XX-XX" */
+  var DPOS = [4, 5, 6, 9, 10, 11, 13, 14, 16, 17];
+
+  function getDigits() {
     var raw = el.value.replace(/\D/g, '');
-
-    /* Убираем ведущие 7 или 8 — они заменяются на +7 */
-    if (raw.charAt(0) === '7' || raw.charAt(0) === '8') raw = raw.slice(1);
-    raw = raw.slice(0, 10);
-
-    var out = '+7';
-    if (raw.length > 0) out += ' (' + raw.slice(0, 3);
-    if (raw.length >= 3) out += ') ' + raw.slice(3, 6);
-    if (raw.length >= 6) out += '-' + raw.slice(6, 8);
-    if (raw.length >= 8) out += '-' + raw.slice(8, 10);
-
-    el.value = out;
+    if (raw[0] === '7' || raw[0] === '8') raw = raw.slice(1);
+    return raw.slice(0, 10);
   }
 
-  el.addEventListener('input',   applyMask);
-  el.addEventListener('paste',   function() { setTimeout(applyMask, 0); });
-  el.addEventListener('focus',   function() { if (!el.value) el.value = '+7 ('; });
-  el.addEventListener('blur',    function() { if (el.value === '+7 (' || el.value === '+7') el.value = ''; });
+  function buildValue(d) {
+    if (!d.length) return '+7 (';
+    var r = '+7 (';
+    if (d.length > 0) r  = '+7 (' + d.slice(0, 3);
+    if (d.length >= 3) r += ') ' + d.slice(3, 6);
+    if (d.length >= 6) r += '-'  + d.slice(6, 8);
+    if (d.length >= 8) r += '-'  + d.slice(8, 10);
+    return r;
+  }
+
+  function setCaret(pos) {
+    try { el.setSelectionRange(pos, pos); } catch(e) {}
+  }
+
+  /* Ввод символа */
+  el.addEventListener('input', function() {
+    var d   = getDigits();
+    el.value = buildValue(d);
+    /* Ставим каретку после последней цифры */
+    var caretPos = d.length < 10 ? (DPOS[d.length] || el.value.length) : el.value.length;
+    setCaret(caretPos);
+  });
+
+  /* Backspace — перехватываем полностью */
   el.addEventListener('keydown', function(e) {
-    /* Разрешаем стереть +7 ( целиком при Backspace в начале */
-    if (e.key === 'Backspace' && (el.value === '+7 (' || el.value === '+7')) {
+    if (e.key !== 'Backspace') return;
+    e.preventDefault();
+
+    var pos = el.selectionStart;
+    var d   = getDigits();
+
+    /* Пусто или в самом начале — очищаем */
+    if (!d.length || pos <= 4) {
       el.value = '';
-      e.preventDefault();
+      return;
+    }
+
+    /* Находим последнюю цифру, стоящую ДО позиции каретки */
+    var digitIdx = -1;
+    for (var i = DPOS.length - 1; i >= 0; i--) {
+      if (DPOS[i] < pos && i < d.length) { digitIdx = i; break; }
+    }
+
+    if (digitIdx >= 0) {
+      d = d.slice(0, digitIdx) + d.slice(digitIdx + 1);
+      el.value = buildValue(d);
+      setCaret(DPOS[digitIdx] !== undefined ? DPOS[digitIdx] : el.value.length);
+    } else {
+      el.value = '+7 (';
+      setCaret(4);
     }
   });
+
+  /* Вставка из буфера */
+  el.addEventListener('paste', function(e) {
+    e.preventDefault();
+    var text = (e.clipboardData || window.clipboardData).getData('text');
+    var d    = text.replace(/\D/g, '');
+    if (d[0] === '7' || d[0] === '8') d = d.slice(1);
+    el.value = buildValue(d.slice(0, 10));
+    setCaret(el.value.length);
+  });
+
+  el.addEventListener('focus', function() { if (!el.value) { el.value = '+7 ('; setCaret(4); } });
+  el.addEventListener('blur',  function() { if (!getDigits().length) el.value = ''; });
 }
 
 function validatePhone(val) {
