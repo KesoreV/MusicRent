@@ -118,13 +118,14 @@
       });
     }
 
-    /* ─── Все ссылки «Каталог» ─── */
-    document.querySelectorAll('a[href="catalog.html"]').forEach(function (a) {
+    /* ─── Все ссылки на каталог (включая ?cat=...) ─── */
+    document.querySelectorAll('a[href^="catalog.html"]').forEach(function (a) {
       a.addEventListener('click', function (e) {
-        if (onPage('catalog.html')) return; /* уже на каталоге */
+        if (onPage('catalog.html') && !this.getAttribute('href').includes('?')) return;
         e.preventDefault();
-        var c = center(this);
-        rippleNavigate(c.x, c.y, 'catalog.html');
+        var c   = center(this);
+        var url = this.getAttribute('href');
+        rippleNavigate(c.x, c.y, url);
       });
     });
 

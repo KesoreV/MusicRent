@@ -1045,8 +1045,18 @@
     });
   }
 
-  // Init
-  applyFilters();
+  // Init — читаем ?cat= из URL и применяем фильтр
+  (function initFromUrl() {
+    var cat = new URLSearchParams(window.location.search).get('cat');
+    if (cat && cat !== 'all') {
+      var link = document.querySelector('.tree-link[data-filter-cat="' + cat + '"]');
+      if (link) {
+        filterCat(link, cat);
+        return;
+      }
+    }
+    applyFilters();
+  })();
 
   /* ─────────────────────────────────────────────
      Реальные счётчики категорий
