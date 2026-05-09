@@ -433,8 +433,10 @@ async function saveInfo(e) {
   e.preventDefault();
   const successEl = document.getElementById('infoSuccess');
   const errorEl   = document.getElementById('infoError');
+  const btn       = e.target.querySelector('button[type=submit]');
   successEl.style.display = 'none';
   errorEl.style.display   = 'none';
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Сохраняем...'; }
 
   const firstName = document.getElementById('editFirstName').value.trim();
   const lastName  = document.getElementById('editLastName').value.trim();
@@ -446,11 +448,14 @@ async function saveInfo(e) {
     if (!updated) throw new Error('not found');
     setSession(updated);
     initProfile();
+    successEl.textContent = '✓ Данные успешно сохранены';
     successEl.style.display = '';
     setTimeout(() => successEl.style.display = 'none', 3000);
   } catch {
     errorEl.textContent = 'Ошибка сохранения данных';
     errorEl.style.display = '';
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Сохранить изменения'; }
   }
 }
 
@@ -479,6 +484,9 @@ async function changePassword(e) {
     return;
   }
 
+  const btn = document.querySelector('#tabPwd button[type=submit]');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Меняем...'; }
+
   try {
     const u    = getCurrentUser();
     const full = await dbGet('users', u.id);
@@ -491,11 +499,14 @@ async function changePassword(e) {
     document.getElementById('pwdOld').value     = '';
     document.getElementById('pwdNew').value     = '';
     document.getElementById('pwdConfirm').value = '';
+    successEl.textContent = '✓ Пароль успешно изменён';
     successEl.style.display = '';
     setTimeout(() => successEl.style.display = 'none', 3000);
   } catch {
     errorEl.textContent = 'Ошибка смены пароля';
     errorEl.style.display = '';
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Сменить пароль'; }
   }
 }
 
@@ -516,19 +527,13 @@ async function loadFavs() {
     return;
   }
 
-  /* Собираем данные о товарах */
-  const items = await Promise.all(favIds.map(async id => {
-    /* 1. сначала пробуем DB */
-    try {
-      const dbItem = await dbGetEquipment(id);
-      if (dbItem) return { id, ...dbItem };
-    } catch {}
-    /* 2. fallback — статический каталог */
+  /* Мгновенно из локального data.js — без Supabase */
+  const items = favIds.map(id => {
     if (typeof PRODUCTS !== 'undefined' && PRODUCTS[id]) {
       return { id, ...PRODUCTS[id] };
     }
     return { id, name: id, emoji: '🎵', price1: 0, avail: 'free', category: '' };
-  }));
+  });
 
   el.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:10px">
