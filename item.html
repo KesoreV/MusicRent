@@ -382,7 +382,7 @@ function render(p) {
   /* Booking meta */
   document.getElementById('bookingMeta').innerHTML =
     `<span class="badge ${AVAIL_CLASS[p.avail]}">${AVAIL_LABEL[p.avail]}</span>
-     <span style="font-size:.78rem;color:var(--text-dim)">${p.invId} · ★ ${p.rating} (${p.reviewCount})</span>`;
+     <span style="font-size:.78rem;color:var(--text-dim)">${p.invId}</span>`;
   document.getElementById('bookingTitle').textContent = p.name;
 
   /* Price tiers */
@@ -470,9 +470,9 @@ async function loadReviews(p) {
   }));
   const all = [...staticRevs, ...dbRevs];
 
-  const total = (p.reviewCount || 0) + dbRevs.length;
-  titleEl.textContent  = `Отзывы (${total})`;
-  ratingEl.textContent = `${'★'.repeat(Math.round(p.rating))} ${p.rating}`;
+  const total = dbRevs.length;
+  titleEl.textContent  = total > 0 ? `Отзывы (${total})` : 'Отзывы';
+  ratingEl.textContent = '';
 
   if (!all.length) {
     list.innerHTML = '<div style="color:var(--text-muted);font-size:.88rem;padding:12px 0">Отзывов пока нет. Будьте первым!</div>';
