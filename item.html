@@ -657,33 +657,81 @@ function toggleItemFav() {
 ═══════════════════════════════════════════ */
 const urlId = new URLSearchParams(window.location.search).get('id') || 'gibson-les-paul';
 
-document.addEventListener('DOMContentLoaded', async () => {
-  /* Подождём auth */
-  if (window.authReady) await window.authReady;
-
-  /* Загрузим из DB (с fallback на статику) */
-  const product = await dbGetEquipment(urlId).catch(() => null)
-    || PRODUCTS[urlId]
-    || PRODUCTS['gibson-les-paul'];
-
-  const p = { ...product, id: product.id || urlId };
+document.addEventListener('DOMContentLoaded', () => {
+  /* ── Шаг 1: МГНОВЕННО рендерим из локального data.js ── */
+  const localProduct = PRODUCTS[urlId] || PRODUCTS['gibson-les-paul'];
+  const p = { ...localProduct, id: urlId };
   render(p);
-  await loadReviews(p);
 
-  /* Настройки залога */
-  const deposit = await dbGetSetting('deposit', 5000).catch(() => 5000);
-  document.getElementById('depositAmt').textContent = Number(deposit).toLocaleString('ru') + ' ₽';
-  recalc(p);
-
-  /* Восстановить избранное */
+  /* Восстановить избранное (localStorage — мгновенно) */
   const favList = JSON.parse(localStorage.getItem('mr_favs') || '[]');
-  const btn = document.getElementById('favBtn');
-  if (btn && favList.includes(urlId)) {
-    btn.innerHTML = '♥ В избранном';
-    btn.style.color       = '#ef4444';
-    btn.style.borderColor = 'rgba(239,68,68,.4)';
-    btn.style.background  = 'rgba(239,68,68,.08)';
+  const favBtn = document.getElementById('favBtn');
+  if (favBtn && favList.includes(urlId)) {
+    favBtn.innerHTML = '♥ В избранном';
+    favBtn.style.color       = '#ef4444';
+    favBtn.style.borderColor = 'rgba(239,68,68,.4)';
+    favBtn.style.background  = 'rgba(239,68,68,.08)';
   }
+
+  /* ── Шаг 2: В ФОНЕ подгружаем реальный статус из Supabase ── */
+  Promise.all([
+    dbGetEquipment(urlId).catch(() => null),
+    dbGetSetting('deposit', 5000).catch(() => 5000),
+    dbGetReviews(urlId).catch(() => []),
+    window.authReady || Promise.resolve()
+  ]).then(([eq, deposit, dbRevs]) => {
+    /* Обновляем статус если отличается */
+    if (eq && eq.avail !== p.avail) {
+      window._currentProduct = { ...p, avail: eq.avail };
+      const rentBtn = document.getElementById('rentBtn');
+      const metaEl  = document.getElementById('bookingMeta');
+      const badgeEl = document.getElementById('mainBadge');
+      if (badgeEl) badgeEl.innerHTML = `<span class="badge ${AVAIL_CLASS[eq.avail]}">${AVAIL_LABEL[eq.avail]}</span>`;
+      if (metaEl)  metaEl.querySelector('.badge').className = `badge ${AVAIL_CLASS[eq.avail]}`;
+      if (rentBtn) {
+        if (eq.avail !== 'free') {
+          rentBtn.textContent  = AVAIL_BTN[eq.avail];
+          rentBtn.style.opacity = '0.5';
+          rentBtn.style.cursor  = 'not-allowed';
+          rentBtn.onclick = null;
+        }
+      }
+    }
+
+    /* Залог */
+    document.getElementById('depositAmt').textContent = Number(deposit).toLocaleString('ru') + ' ₽';
+    recalc(window._currentProduct || p);
+
+    /* Отзывы */
+    const listEl   = document.getElementById('reviewsList');
+    const titleEl  = document.getElementById('reviewsTitle');
+    if (dbRevs.length > 0) {
+      titleEl.textContent = `Отзывы (${dbRevs.length})`;
+      listEl.innerHTML = dbRevs.map((r, i) => {
+        const initials = (r.userName || '??').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+        const date = r.createdAt ? new Date(r.createdAt).toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'}) : '';
+        return `<div ${i>0?'style="border-top:1px solid var(--border);padding-top:14px;margin-top:8px"':''}>
+          <div class="review-head">
+            <div class="reviewer">
+              <div class="avatar">${initials}</div>
+              <div><div class="reviewer-name">${r.userName||'Пользователь'}</div><div class="reviewer-date">${date}</div></div>
+            </div>
+            <div class="review-stars">${'★'.repeat(r.stars||5)}${'☆'.repeat(5-(r.stars||5))}</div>
+          </div>
+          <div class="review-text">${r.text}</div>
+        </div>`;
+      }).join('');
+    }
+
+    /* Форма отзыва */
+    const u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+    if (u) document.getElementById('reviewFormWrap').style.display = '';
+    else   document.getElementById('reviewLoginHint').style.display = '';
+
+  }).catch(() => {
+    /* Supabase недоступен — страница уже показана из локальных данных */
+    recalc(p);
+  });
 });
 </script>
 <script>

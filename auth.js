@@ -164,10 +164,12 @@ function initHamburger() {
 let authReady;
 
 document.addEventListener('DOMContentLoaded', () => {
+  /* UI инициализируем мгновенно из localStorage сессии */
+  initAuthNav();
+  initHamburger();
+
+  /* Seed запускаем в фоне — не блокируем страницу */
   authReady = dbSeedAdmin()
     .then(() => dbSeedDemoOrders().catch(() => {}))
-    .then(() => {
-      initAuthNav();
-      initHamburger();
-    });
+    .catch(() => {});
 });
