@@ -152,7 +152,7 @@ const MODALS_HTML = `
         </div>
         <div class="form-group">
           <label class="form-label">Комментарий (необязательно)</label>
-          <textarea class="form-control" id="cbComment" rows="2" placeholder="Какое оборудование интересует?"></textarea>
+          <textarea class="form-control" id="cbComment" rows="2" placeholder="Какое оборудование интересует?" style="resize:none"></textarea>
         </div>
         <div id="cbError" style="display:none;color:var(--danger);font-size:.82rem"></div>
         <button class="btn btn-primary" style="justify-content:center;padding:12px" onclick="submitCallback()">
