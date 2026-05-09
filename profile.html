@@ -363,6 +363,8 @@ async function loadOrders() {
   list.innerHTML = orders.map(o => {
     const status = o.status || 'pending';
     const items  = Array.isArray(o.items) ? o.items : [];
+    /* Отменить можно только пока ожидает подтверждения */
+    const canCancel = status === 'pending';
     return `
     <div class="order-card">
       <div class="order-card-hd">
@@ -370,9 +372,19 @@ async function loadOrders() {
           <span class="order-num">Заказ #${o.id}</span>
           <span class="order-date" style="margin-left:10px">${fmtDate(o.createdAt)}</span>
         </div>
-        <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <span class="badge ${STATUS_CLASS[status]}">${STATUS_LABEL[status]}</span>
           <span class="order-total">${fmtPrice(o.total)}</span>
+          ${canCancel ? `
+            <button onclick="cancelOrder('${o.id}')"
+              style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;
+                     padding:4px 12px;border-radius:var(--r);font-size:.78rem;cursor:pointer;
+                     transition:all .18s;font-weight:600"
+              onmouseover="this.style.background='rgba(239,68,68,.2)'"
+              onmouseout="this.style.background='rgba(239,68,68,.1)'"
+              title="Отменить заказ (пока не подтверждён)">
+              ✕ Отменить
+            </button>` : ''}
         </div>
       </div>
       <div class="order-items">
@@ -387,6 +399,31 @@ async function loadOrders() {
       </div>
     </div>`;
   }).join('');
+}
+
+/* ── Отмена заказа клиентом ── */
+async function cancelOrder(orderId) {
+  if (!confirm('Вы уверены, что хотите отменить заказ #' + orderId + '?')) return;
+  try {
+    const order = await dbGet('orders', orderId);
+    if (!order || order.status !== 'pending') {
+      alert('Заказ уже обработан администратором — отмена невозможна.');
+      await loadOrders();
+      return;
+    }
+    /* Меняем статус заказа */
+    order.status = 'cancelled';
+    await dbPut('orders', order);
+    /* Возвращаем оборудование в свободное состояние */
+    const items = Array.isArray(order.items) ? order.items : [];
+    for (const item of items) {
+      await dbUpdateEquipmentAvail(item.id, 'free').catch(() => {});
+    }
+    /* Обновляем список */
+    await loadOrders();
+  } catch(e) {
+    alert('Ошибка отмены заказа. Попробуйте ещё раз.');
+  }
 }
 
 /* ───────────────────────────────────────────────
