@@ -1164,8 +1164,54 @@
 <script src="cursor.js"></script>
 <script src="modals.js"></script>
 <script>
+/* ─── Синхронизация статусов оборудования из Supabase ─── */
+async function syncEquipmentStatuses() {
+  try {
+    const dbItems = await dbGetAll('equipment').catch(() => []);
+    if (!dbItems.length) return;
+
+    const AVAIL_LABEL = { free:'Свободно', booked:'Забронировано', busy:'В аренде', service:'На обслуживании' };
+    const AVAIL_CLASS = { free:'b-green', booked:'b-yellow', busy:'b-blue', service:'b-red' };
+
+    dbItems.forEach(eq => {
+      /* Находим карточку по href */
+      const card = document.querySelector(`.product-card[href="item.html?id=${eq.id}"]`);
+      if (!card) return;
+
+      /* Обновляем data-avail для фильтров */
+      card.dataset.avail = eq.avail;
+
+      /* Обновляем бейдж */
+      const badge = card.querySelector('.pc-badge');
+      if (badge) badge.innerHTML = `<span class="badge ${AVAIL_CLASS[eq.avail] || 'b-gray'}">${AVAIL_LABEL[eq.avail] || eq.avail}</span>`;
+
+      /* Обновляем кнопку */
+      const btn = card.querySelector('.btn-rent');
+      if (btn) {
+        if (eq.avail === 'free') {
+          btn.textContent = 'Взять в аренду';
+          btn.style.opacity = '';
+          btn.style.cursor = '';
+        } else {
+          btn.textContent = AVAIL_LABEL[eq.avail] || eq.avail;
+          btn.style.opacity = '0.5';
+          btn.style.cursor = 'not-allowed';
+        }
+      }
+    });
+
+    /* Перезапускаем фильтры с обновлёнными данными */
+    if (typeof applyFilters === 'function') applyFilters();
+
+  } catch(e) { console.log('Status sync:', e); }
+}
+
 /* ─── Подгрузить оборудование добавленное администратором ─── */
 document.addEventListener('DOMContentLoaded', async () => {
+  /* Сначала синхронизируем статусы */
+  if (window.authReady) await window.authReady;
+  await syncEquipmentStatuses();
+
   try {
     const dbItems = await dbGetAll('equipment');
     const adminItems = dbItems.filter(e => e.source === 'admin' || e.source === 'seed-edited');

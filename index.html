@@ -641,6 +641,31 @@ document.addEventListener('DOMContentLoaded', async function() {
   } catch(e) {}
 });
 
+/* ── Синхронизация статусов карточек на главной ── */
+async function syncHomeStatuses() {
+  try {
+    const dbItems = await dbGetAll('equipment').catch(() => []);
+    const AVAIL_LABEL = { free:'Свободно', booked:'Забронировано', busy:'В аренде', service:'На обслуживании' };
+    const AVAIL_CLASS = { free:'b-green', booked:'b-yellow', busy:'b-blue', service:'b-red' };
+    dbItems.forEach(function(eq) {
+      var card = document.querySelector('.product-card[href="item.html?id=' + eq.id + '"]');
+      if (!card) return;
+      var badge = card.querySelector('.pc-badge');
+      if (badge) badge.innerHTML = '<span class="badge ' + (AVAIL_CLASS[eq.avail]||'b-gray') + '">' + (AVAIL_LABEL[eq.avail]||eq.avail) + '</span>';
+      var btn = card.querySelector('.btn-rent');
+      if (!btn) return;
+      if (eq.avail === 'free') {
+        btn.textContent = 'Взять в аренду'; btn.style.opacity = ''; btn.style.cursor = '';
+      } else {
+        btn.textContent = AVAIL_LABEL[eq.avail]||eq.avail; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
+      }
+    });
+  } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var p = window.authReady; if (p && p.then) p.then(syncHomeStatuses); else syncHomeStatuses();
+});
+
 /* ── Анимация шагов при прокрутке ── */
 (function() {
   var cards = document.querySelectorAll('.step-card');
