@@ -46,7 +46,13 @@ function addToCart(id, name, emoji, price1, price2, days) {
 
   /* Проверяем актуальный статус в Supabase перед добавлением */
   if (typeof dbGetEquipment === 'function') {
-    dbGetEquipment(id).then(function(eq) {
+    /* Сразу показываем что клик принят */
+    showToast('⏳ Проверяем наличие...');
+
+    /* Таймаут 6 сек — если Supabase не ответил, добавляем всё равно */
+    var timeout = new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 6000); });
+
+    Promise.race([dbGetEquipment(id), timeout]).then(function(eq) {
       if (eq && eq.avail !== 'free') {
         const MSG = {
           booked:  '🔒 «' + name + '» уже забронирован другим клиентом',
@@ -54,13 +60,12 @@ function addToCart(id, name, emoji, price1, price2, days) {
           service: '🔧 «' + name + '» на техническом обслуживании',
         };
         showToast(MSG[eq.avail] || '❌ «' + name + '» недоступен');
-        /* Обновляем кнопку прямо на странице */
         _updateCardBtn(id, eq.avail, name);
         return;
       }
       _doAddToCart(id, name, emoji, price1, price2, days);
     }).catch(function() {
-      /* Если Supabase недоступен — пропускаем, проверим на оформлении */
+      /* Supabase недоступен — добавляем, проверим повторно на оформлении */
       _doAddToCart(id, name, emoji, price1, price2, days);
     });
     return;
