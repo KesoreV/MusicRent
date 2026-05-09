@@ -43,12 +43,54 @@ function addToCart(id, name, emoji, price1, price2, days) {
     setTimeout(() => { window.location.href = 'login.html'; }, 1400);
     return;
   }
+
+  /* Проверяем актуальный статус в Supabase перед добавлением */
+  if (typeof dbGetEquipment === 'function') {
+    dbGetEquipment(id).then(function(eq) {
+      if (eq && eq.avail !== 'free') {
+        const MSG = {
+          booked:  '🔒 «' + name + '» уже забронирован другим клиентом',
+          busy:    '🔒 «' + name + '» сейчас находится в аренде',
+          service: '🔧 «' + name + '» на техническом обслуживании',
+        };
+        showToast(MSG[eq.avail] || '❌ «' + name + '» недоступен');
+        /* Обновляем кнопку прямо на странице */
+        _updateCardBtn(id, eq.avail, name);
+        return;
+      }
+      _doAddToCart(id, name, emoji, price1, price2, days);
+    }).catch(function() {
+      /* Если Supabase недоступен — пропускаем, проверим на оформлении */
+      _doAddToCart(id, name, emoji, price1, price2, days);
+    });
+    return;
+  }
+
+  _doAddToCart(id, name, emoji, price1, price2, days);
+}
+
+/* Вспомогательная: обновить кнопку на карточке когда товар уже занят */
+function _updateCardBtn(id, avail, name) {
+  const AVAIL_LABEL = { booked:'Забронировано', busy:'В аренде', service:'На обслуживании' };
+  const AVAIL_BADGE = { booked:'b-yellow', busy:'b-blue', service:'b-red' };
+  document.querySelectorAll('.product-card').forEach(function(card) {
+    var href = card.getAttribute('href') || '';
+    if (!href.includes('id=' + id)) return;
+    var btn = card.querySelector('.btn-rent');
+    if (btn) { btn.textContent = AVAIL_LABEL[avail] || avail; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
+    var badge = card.querySelector('.pc-badge');
+    if (badge) badge.innerHTML = '<span class="badge ' + (AVAIL_BADGE[avail]||'b-gray') + '">' + (AVAIL_LABEL[avail]||avail) + '</span>';
+  });
+}
+
+/* Фактическое добавление в корзину */
+function _doAddToCart(id, name, emoji, price1, price2, days) {
   days = parseInt(days) || 1;
   const cart = loadCart();
   const existing = cart.find(i => i.id === id);
   if (existing) {
     existing.qty++;
-    existing.days = days; // обновляем кол-во дней
+    existing.days = days;
   } else {
     cart.push({ id, name, emoji, price1: +price1, price2: +price2, days, qty: 1 });
   }
