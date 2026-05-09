@@ -352,6 +352,8 @@ function initFavorites() {
 /* ─── catalog card buttons ─── */
 function initCardButtons() {
   document.querySelectorAll('.btn-rent').forEach(btn => {
+    if (btn.dataset.cartInited) return; /* уже инициализирована — пропускаем */
+    btn.dataset.cartInited = '1';
     btn.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
