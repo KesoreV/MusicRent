@@ -337,17 +337,7 @@ function fmtDate(iso) {
 function fmtPrice(n) { return Number(n).toLocaleString('ru') + ' ₽'; }
 function dayWord(n)  { if(n===1)return'день'; if(n>=2&&n<=4)return'дня'; return'дней'; }
 
-async function loadOrders() {
-  const list = document.getElementById('ordersList');
-  const cnt  = document.getElementById('ordersCount');
-  const u    = getCurrentUser();
-
-  let orders = [];
-  try {
-    const all = await dbGetAllByIndex('orders', 'userEmail', u.email);
-    orders = all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  } catch {}
-
+function renderOrderList(orders, list, cnt) {
   cnt.textContent = orders.length ? `${orders.length} заказ${orders.length===1?'':'ов'}` : '';
 
   if (!orders.length) {
@@ -399,6 +389,36 @@ async function loadOrders() {
       </div>
     </div>`;
   }).join('');
+}
+
+async function loadOrders() {
+  const list = document.getElementById('ordersList');
+  const cnt  = document.getElementById('ordersCount');
+  const u    = getCurrentUser();
+
+  /* 1. МГНОВЕННО показываем кэш из localStorage */
+  try {
+    const cached = JSON.parse(localStorage.getItem('mr_orders_cache') || '[]');
+    const userOrders = cached
+      .filter(o => o.userEmail === u.email)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    if (userOrders.length) renderOrderList(userOrders, list, cnt);
+    else list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted)"><div class="loading-spin"></div><div style="margin-top:8px;font-size:.85rem">Загружаем заказы...</div></div>';
+  } catch(e) {}
+
+  /* 2. В ФОНЕ синхронизируем с Supabase и обновляем */
+  try {
+    const all = await dbGetAllByIndex('orders', 'userEmail', u.email);
+    const orders = all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    /* Обновляем кэш */
+    const allCached = JSON.parse(localStorage.getItem('mr_orders_cache') || '[]');
+    const others = allCached.filter(o => o.userEmail !== u.email);
+    localStorage.setItem('mr_orders_cache', JSON.stringify([...orders, ...others].slice(0, 50)));
+    /* Рендерим свежие данные */
+    renderOrderList(orders, list, cnt);
+  } catch(e) {
+    /* Supabase недоступен — кэш уже показан */
+  }
 }
 
 /* ── Отмена заказа клиентом ── */

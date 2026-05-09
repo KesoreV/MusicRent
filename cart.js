@@ -223,8 +223,18 @@ function renderCartBody() {
   if (totalEl) totalEl.textContent = fmtPrice(getCartTotal());
 }
 
+const ORDERS_CACHE = 'mr_orders_cache';
+
+function cacheOrder(orderData) {
+  try {
+    const all = JSON.parse(localStorage.getItem(ORDERS_CACHE) || '[]');
+    all.unshift(orderData);
+    localStorage.setItem(ORDERS_CACHE, JSON.stringify(all.slice(0, 50)));
+  } catch(e) {}
+}
+
 /* ─── checkout ─── */
-async function checkoutCart() {
+function checkoutCart() {
   if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
     showToast('Войдите в аккаунт для оформления заказа');
     setTimeout(() => { window.location.href = 'login.html'; }, 1200);
@@ -235,30 +245,20 @@ async function checkoutCart() {
   const body   = document.getElementById('cartBody');
   const footer = document.getElementById('cartFooter');
 
-  /* Показываем индикатор загрузки */
-  const checkoutBtn = document.querySelector('#cartFooter .btn-primary');
-  if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.textContent = '⏳ Оформляем...'; }
-
   const u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
   const orderNum = Date.now().toString();
 
-  try {
-    /* Сохраняем заказ */
-    await dbPut('orders', {
-      id:        orderNum,
-      userEmail: u ? u.email : 'guest',
-      items:     cart,
-      total:     getCartTotal(),
-      status:    'pending',
-      createdAt: new Date().toISOString()
-    });
-  } catch {
-    showToast('Ошибка сохранения заказа. Попробуйте ещё раз.');
-    if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.textContent = 'Оформить заказ'; }
-    return;
-  }
+  const orderData = {
+    id:        orderNum,
+    userEmail: u ? u.email : 'guest',
+    items:     cart,
+    total:     getCartTotal(),
+    status:    'pending',
+    createdAt: new Date().toISOString()
+  };
 
-  /* Показываем успех СРАЗУ — не ждём обновления статусов */
+  /* 1. МГНОВЕННО: сохраняем в localStorage-кэш и показываем успех */
+  cacheOrder(orderData);
   body.innerHTML = `
     <div style="text-align:center;padding:36px 20px">
       <div style="font-size:3rem;margin-bottom:14px">✅</div>
@@ -271,7 +271,8 @@ async function checkoutCart() {
   if (footer) footer.style.display = 'none';
   saveCart([]);
 
-  /* Обновляем статусы оборудования в фоне */
+  /* 2. В ФОНЕ: синхронизируем с Supabase */
+  dbPut('orders', orderData).catch(() => {});
   cart.forEach(item => dbUpdateEquipmentAvail(item.id, 'booked').catch(() => {}));
 }
 

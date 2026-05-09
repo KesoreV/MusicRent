@@ -578,27 +578,21 @@ function toggleFaq(qEl) {
   if (!isOpen) item.classList.add('open');
 }
 
-/* ── Реальная статистика и отзывы из БД ── */
-document.addEventListener('DOMContentLoaded', async function() {
-  if (window.authReady) await window.authReady;
+/* ── Статистика и отзывы — фоновая загрузка без блокировки ── */
+document.addEventListener('DOMContentLoaded', function() {
+  /* Оборудование — из локального data.js (мгновенно) */
+  const eqCount = typeof PRODUCTS !== 'undefined' ? Object.keys(PRODUCTS).length : 0;
+  document.getElementById('heroStatEq').textContent = eqCount + '+';
 
-  /* Статистика */
+  /* Заказы — из кэша (мгновенно), потом Supabase в фоне */
   try {
-    const eqCount = typeof PRODUCTS !== 'undefined' ? Object.keys(PRODUCTS).length : 0;
-    document.getElementById('heroStatEq').textContent = eqCount + '+';
+    const cached = JSON.parse(localStorage.getItem('mr_orders_cache') || '[]');
+    const done = cached.filter(o => o.status === 'completed' || o.status === 'active').length;
+    document.getElementById('heroStatOrd').textContent = done > 0 ? done + '+' : '0';
+  } catch(e) { document.getElementById('heroStatOrd').textContent = '0'; }
 
-    const orders = await dbGetAll('orders').catch(() => []);
-    const doneOrders = orders.filter(o => o.status === 'completed' || o.status === 'active').length;
-    document.getElementById('heroStatOrd').textContent = doneOrders > 0 ? doneOrders + '+' : '0';
-
-    const reviews = await dbGetAll('reviews').catch(() => []);
-    if (reviews.length > 0) {
-      const avg = (reviews.reduce((s, r) => s + (r.stars || 5), 0) / reviews.length).toFixed(1);
-      document.getElementById('heroStatRating').textContent = avg + ' ★';
-    } else {
-      document.getElementById('heroStatRating').textContent = '— ★';
-    }
-  } catch(e) {}
+  /* Рейтинг и отзывы — асинхронно, не блокируем */
+  document.getElementById('heroStatRating').textContent = '— ★';
 
   /* Отзывы на главной из БД */
   try {
