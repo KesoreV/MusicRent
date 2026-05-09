@@ -215,10 +215,21 @@ async function checkoutCart() {
   const checkoutBtn = document.querySelector('#cartFooter .btn-primary');
   if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.textContent = '⏳ Оформляем...'; }
 
-  // сохраняем заказ в IndexedDB
   const u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
   const orderNum = Date.now().toString();
+
   try {
+    /* 1. Проверяем актуальный статус каждой позиции */
+    for (const item of cart) {
+      const eq = await dbGetEquipment(item.id).catch(() => null);
+      if (eq && eq.avail !== 'free') {
+        showToast('❌ «' + item.name + '» уже недоступна — удалите из корзины');
+        if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.textContent = 'Оформить заказ'; }
+        return;
+      }
+    }
+
+    /* 2. Сохраняем заказ */
     await dbPut('orders', {
       id:        orderNum,
       userEmail: u ? u.email : 'guest',
@@ -227,8 +238,15 @@ async function checkoutCart() {
       status:    'pending',
       createdAt: new Date().toISOString()
     });
+
+    /* 3. Сразу помечаем оборудование как «Забронировано» */
+    for (const item of cart) {
+      await dbUpdateEquipmentAvail(item.id, 'booked').catch(() => {});
+    }
+
   } catch {
     showToast('Ошибка сохранения заказа. Попробуйте ещё раз.');
+    if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.textContent = 'Оформить заказ'; }
     return;
   }
 

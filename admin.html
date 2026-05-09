@@ -620,11 +620,31 @@ function searchOrders(q) {
   renderOrders(_allOrders, _ordersFilter, q);
 }
 
+/* Статус заказа → статус оборудования */
+const ORDER_TO_AVAIL = {
+  pending:   'booked',   /* ожидает → забронировано */
+  confirmed: 'booked',   /* подтверждён → забронировано */
+  active:    'busy',     /* выдан → в аренде */
+  completed: 'free',     /* завершён → свободно */
+  cancelled: 'free',     /* отменён → свободно */
+};
+
 async function updateOrderStatus(id, status, btn) {
   if (btn) btn.disabled = true;
   try {
     const order = await dbGet('orders', id);
-    if (order) { order.status = status; await dbPut('orders', order); }
+    if (order) {
+      order.status = status;
+      await dbPut('orders', order);
+
+      /* Обновляем статус каждой единицы оборудования */
+      const newAvail = ORDER_TO_AVAIL[status];
+      if (newAvail && Array.isArray(order.items)) {
+        for (const item of order.items) {
+          await dbUpdateEquipmentAvail(item.id, newAvail).catch(() => {});
+        }
+      }
+    }
     showToast(`✓ Статус изменён на "${STATUS_LABEL[status]}"`);
     await loadAdminStats();
     await loadAdminOrders();
