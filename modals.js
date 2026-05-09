@@ -169,7 +169,7 @@ const MODALS_HTML = `
       <p>Свяжемся с вами в ближайшее время.<br>Среднее время ответа — 10–15 минут.</p>
       <div class="tg-hint">
         <span style="font-size:1.3rem">✈️</span>
-        <span>Также можете написать нам сразу в <a href="https://t.me/musicrent_amur" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Telegram</a> — ответим быстрее!</span>
+        <span>Также можете написать нам сразу в <a href="https://t.me/MusicRentSupp" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Telegram</a> — ответим быстрее!</span>
       </div>
       <button class="btn btn-outline" style="margin-top:16px;justify-content:center;width:100%" onclick="closeInfoModal('modalCallback')">Закрыть</button>
     </div>
@@ -180,7 +180,7 @@ const MODALS_HTML = `
 <div class="float-btns" id="floatBtns">
   <div class="float-btn-wrap">
     <span class="float-label">Написать в Telegram</span>
-    <a class="float-btn float-btn-tg" href="https://t.me/musicrent_amur" target="_blank" rel="noopener" title="Telegram">✈️</a>
+    <a class="float-btn float-btn-tg" href="https://t.me/MusicRentSupp" target="_blank" rel="noopener" title="Telegram">✈️</a>
   </div>
   <div class="float-btn-wrap">
     <span class="float-label">Заказать звонок</span>
@@ -373,7 +373,7 @@ function fixAllLinks() {
 
     /* Telegram */
     if (text.includes('Telegram') || text.includes('💬')) {
-      a.href   = 'https://t.me/musicrent_amur';
+      a.href   = 'https://t.me/MusicRentSupp';
       a.target = '_blank';
       a.rel    = 'noopener';
       return;
