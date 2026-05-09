@@ -19,7 +19,10 @@ function saveCart(cart) {
 /* ─── count badge ─── */
 function updateCartCount() {
   const total = loadCart().reduce((s, i) => s + i.qty, 0);
-  document.querySelectorAll('.cart-count').forEach(el => el.textContent = total || '');
+  document.querySelectorAll('.cart-count').forEach(el => {
+    el.textContent    = total || '';
+    el.style.display  = total > 0 ? 'flex' : 'none';
+  });
 }
 
 /* ─── helpers ─── */
