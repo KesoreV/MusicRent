@@ -662,9 +662,8 @@ async function syncHomeStatuses() {
     });
   } catch(e) {}
 }
-document.addEventListener('DOMContentLoaded', function() {
-  var p = window.authReady; if (p && p.then) p.then(syncHomeStatuses); else syncHomeStatuses();
-});
+/* Фоновый sync — не ждём authReady */
+document.addEventListener('DOMContentLoaded', function() { syncHomeStatuses(); });
 
 /* ── Анимация шагов при прокрутке ── */
 (function() {

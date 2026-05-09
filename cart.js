@@ -47,33 +47,7 @@ function addToCart(id, name, emoji, price1, price2, days) {
     return;
   }
 
-  /* Проверяем актуальный статус в Supabase перед добавлением */
-  if (typeof dbGetEquipment === 'function') {
-    /* Сразу показываем что клик принят */
-    showToast('⏳ Проверяем наличие...');
-
-    /* Таймаут 6 сек — если Supabase не ответил, добавляем всё равно */
-    var timeout = new Promise(function(resolve) { setTimeout(function() { resolve(null); }, 6000); });
-
-    Promise.race([dbGetEquipment(id), timeout]).then(function(eq) {
-      if (eq && eq.avail !== 'free') {
-        const MSG = {
-          booked:  '🔒 «' + name + '» уже забронирован другим клиентом',
-          busy:    '🔒 «' + name + '» сейчас находится в аренде',
-          service: '🔧 «' + name + '» на техническом обслуживании',
-        };
-        showToast(MSG[eq.avail] || '❌ «' + name + '» недоступен');
-        _updateCardBtn(id, eq.avail, name);
-        return;
-      }
-      _doAddToCart(id, name, emoji, price1, price2, days);
-    }).catch(function() {
-      /* Supabase недоступен — добавляем, проверим повторно на оформлении */
-      _doAddToCart(id, name, emoji, price1, price2, days);
-    });
-    return;
-  }
-
+  /* Добавляем мгновенно — финальная проверка будет при оформлении заказа */
   _doAddToCart(id, name, emoji, price1, price2, days);
 }
 

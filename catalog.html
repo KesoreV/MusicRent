@@ -1208,9 +1208,8 @@ async function syncEquipmentStatuses() {
 
 /* ─── Подгрузить оборудование добавленное администратором ─── */
 document.addEventListener('DOMContentLoaded', async () => {
-  /* Сначала синхронизируем статусы */
-  if (window.authReady) await window.authReady;
-  await syncEquipmentStatuses();
+  /* Синхронизируем статусы в фоне — не блокируем страницу */
+  syncEquipmentStatuses();
 
   try {
     const dbItems = await dbGetAll('equipment');
