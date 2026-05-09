@@ -363,8 +363,8 @@ async function loadOrders() {
   list.innerHTML = orders.map(o => {
     const status = o.status || 'pending';
     const items  = Array.isArray(o.items) ? o.items : [];
-    /* Отменить можно только пока ожидает подтверждения */
-    const canCancel = status === 'pending';
+    /* Отменить можно пока не выдано (ожидает или подтверждён) */
+    const canCancel = status === 'pending' || status === 'confirmed';
     return `
     <div class="order-card">
       <div class="order-card-hd">
@@ -406,8 +406,8 @@ async function cancelOrder(orderId) {
   if (!confirm('Вы уверены, что хотите отменить заказ #' + orderId + '?')) return;
   try {
     const order = await dbGet('orders', orderId);
-    if (!order || order.status !== 'pending') {
-      alert('Заказ уже обработан администратором — отмена невозможна.');
+    if (!order || !['pending','confirmed'].includes(order.status)) {
+      alert('Заказ уже выдан или завершён — отмена невозможна. Свяжитесь с администратором.');
       await loadOrders();
       return;
     }
