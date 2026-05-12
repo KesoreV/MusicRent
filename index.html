@@ -578,23 +578,26 @@ function toggleFaq(qEl) {
   if (!isOpen) item.classList.add('open');
 }
 
-/* ── Статистика и отзывы — фоновая загрузка без блокировки ── */
+/* ── Статистика — мгновенно из локальных данных ── */
 document.addEventListener('DOMContentLoaded', function() {
-  /* Оборудование — из локального data.js (мгновенно) */
-  const eqCount = typeof PRODUCTS !== 'undefined' ? Object.keys(PRODUCTS).length : 0;
+  /* Оборудование из data.js */
+  var eqCount = typeof PRODUCTS !== 'undefined' ? Object.keys(PRODUCTS).length : 20;
   document.getElementById('heroStatEq').textContent = eqCount + '+';
 
-  /* Заказы — из кэша (мгновенно), потом Supabase в фоне */
+  /* Заказы из кэша */
   try {
-    const cached = JSON.parse(localStorage.getItem('mr_orders_cache') || '[]');
-    const done = cached.filter(o => o.status === 'completed' || o.status === 'active').length;
+    var cached = JSON.parse(localStorage.getItem('mr_orders_cache') || '[]');
+    var done = cached.filter(function(o){ return o.status === 'completed' || o.status === 'active'; }).length;
     document.getElementById('heroStatOrd').textContent = done > 0 ? done + '+' : '0';
   } catch(e) { document.getElementById('heroStatOrd').textContent = '0'; }
 
-  /* Рейтинг и отзывы — асинхронно, не блокируем */
   document.getElementById('heroStatRating').textContent = '— ★';
 
-  /* Отзывы на главной из БД */
+  /* Отзывы загружаем отдельно в фоне */
+  loadHomeReviews();
+});
+
+async function loadHomeReviews() {
   try {
     const reviews = await dbGetAll('reviews').catch(() => []);
     const grid    = document.getElementById('mainReviewsGrid');
@@ -633,7 +636,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }).join('');
     }
   } catch(e) {}
-});
+}
 
 /* ── Синхронизация статусов карточек на главной ── */
 async function syncHomeStatuses() {
