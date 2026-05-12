@@ -556,6 +556,8 @@ footer{background:var(--bg-sidebar);border-top:1px solid var(--border)}
    RESPONSIVE — 900px (Tablet)
 ══════════════════════════════════════════════ */
 @media(max-width:900px){
+  /* Item right col — не sticky на планшете */
+  .item-right-col{position:static!important;align-self:auto}
   .catalog-wrap{grid-template-columns:1fr}
   .sidebar{position:static}
   .hero{grid-template-columns:1fr;padding:40px 20px}
@@ -1053,3 +1055,217 @@ body.is-logged-in .cta-guest{display:none}
 .btn-callback{background:linear-gradient(135deg,var(--accent),#2563eb);color:#fff;border:none;border-radius:var(--r);padding:7px 14px;font-size:.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;transition:var(--transition);box-shadow:0 2px 8px rgba(59,130,246,.25);white-space:nowrap}
 .btn-callback:hover{transform:translateY(-1px);box-shadow:var(--sh-accent)}
 @media(max-width:768px){.btn-callback span.cb-txt{display:none}}
+
+/* ══════════════════════════════════════════════
+   МОБИЛЬНЫЙ АДАПТИВ — КОМПЛЕКСНЫЙ ФИШ
+══════════════════════════════════════════════ */
+
+/* ── 768px: основные правки ── */
+@media(max-width:768px){
+
+  /* Navbar: убираем min-width, уменьшаем отступы */
+  .nav-right{min-width:unset!important;padding-left:6px;gap:5px}
+  .cart-btn{width:36px;height:36px}
+
+  /* Hero: нормальный однострочный вид */
+  .hero{padding-top:28px!important}
+  .hero h1{font-size:1.75rem;letter-spacing:-.01em}
+  .hero-stats{flex-wrap:wrap;justify-content:flex-start;gap:16px}
+  .hs-val{font-size:1.3rem}
+
+  /* Каталог: боковая панель как настоящий drawer */
+  #catalogSidebar{
+    position:fixed;top:0;left:-100%;width:min(300px,85vw);
+    height:100vh;z-index:200;overflow-y:auto;
+    background:var(--bg-card);border-right:1px solid var(--border);
+    transition:left .3s cubic-bezier(.4,0,.2,1);
+    padding-bottom:40px;
+  }
+  #catalogSidebar.mobile-open{left:0;box-shadow:6px 0 32px rgba(0,0,0,.6)}
+  /* Оверлей под drawer */
+  #catalogSidebar.mobile-open::before{
+    content:'';position:fixed;inset:0;left:min(300px,85vw);
+    background:rgba(0,0,0,.5);z-index:-1;
+  }
+
+  /* Карточки: оставляем 2 колонки но с нормальными пропорциями */
+  .products-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .products-grid-home{grid-template-columns:repeat(2,1fr);gap:10px}
+  .pc-img{height:160px}
+  .pc-body{padding:10px 12px;gap:7px}
+  .pc-price-box{padding:7px 6px}
+  .pc-price-val{font-size:.88rem}
+  .btn-rent{padding:10px;font-size:.82rem}
+
+  /* Item detail: booking block полностью ниже галереи */
+  .item-wrap{grid-template-columns:1fr;gap:16px;padding:12px 14px}
+  .item-right-col{position:static!important}
+  .booking-block{padding:16px;gap:12px}
+  .booking-tiers{gap:8px}
+  .date-grid{grid-template-columns:1fr 1fr;gap:8px}
+
+  /* Profile */
+  .profile-wrap{grid-template-columns:1fr;padding:12px 14px;gap:14px}
+  .profile-card{position:static}
+
+  /* FAQ */
+  .faq-wrap{max-width:100%;gap:8px}
+  .faq-q{padding:14px 16px;font-size:.9rem}
+  .faq-a-inner{padding:0 16px 14px;font-size:.87rem}
+
+  /* Карта */
+  .map-inner{padding:32px 14px}
+  .map-wrap{height:260px;border-radius:var(--r-lg)}
+  .map-info{gap:12px;margin-top:16px}
+  .map-info-card{padding:14px 16px}
+
+  /* Float кнопки: компактнее, не перекрывают контент */
+  .float-btns{right:12px;bottom:16px;gap:8px}
+  .float-btn{width:46px;height:46px;font-size:1.2rem}
+  .float-label{display:none}
+  /* Убираем пульс на мобиле чтобы не отвлекал */
+  .float-btn-cb::before{display:none}
+
+  /* CTA */
+  .cta-inner{padding:28px 16px}
+
+  /* Modal */
+  .overlay{align-items:flex-end}
+  .modal{border-radius:18px 18px 0 0;max-height:90vh;overflow-y:auto}
+  .cart-modal{max-height:90vh;border-radius:18px 18px 0 0}
+  .cart-body{max-height:45vh}
+
+  /* Admin */
+  .adm-content{padding:16px 14px}
+  .table-card{overflow-x:auto}
+  .data-table{min-width:600px}
+
+  /* Шаги */
+  .steps-grid{grid-template-columns:repeat(2,1fr);gap:16px;padding:32px 14px}
+  .step-num-badge{display:none}
+
+  /* Footer */
+  .footer-top{grid-template-columns:1fr 1fr;gap:20px;padding:28px 14px 20px}
+}
+
+/* ── 480px: смартфон ── */
+@media(max-width:480px){
+
+  /* Navbar */
+  .navbar-inner{padding:0 10px;min-height:52px}
+  .nav-logo{font-size:.88rem;gap:9px}
+  .logo-box{width:28px;height:28px;font-size:.85rem;border-radius:8px}
+  .nav-right{gap:4px}
+  .cart-btn{width:32px;height:32px;font-size:.9rem}
+  .hamburger-btn{width:32px;height:32px;padding:6px}
+
+  /* Hero: один столбец */
+  .hero{padding:22px 12px}
+  .hero h1{font-size:1.45rem;line-height:1.18}
+  .hero-badge{font-size:.68rem;margin-bottom:12px}
+  .hero-sub{font-size:.82rem;margin-bottom:16px}
+  .hero-stats{flex-direction:row;flex-wrap:wrap;gap:14px 20px;padding-top:16px;margin-top:16px}
+  .hs-val{font-size:1.15rem}
+  .hs-lbl{font-size:.68rem}
+  .hero-btns .btn-lg{padding:10px 16px;font-size:.85rem}
+
+  /* Карточки: 1 столбец */
+  .products-grid{grid-template-columns:1fr;gap:10px}
+  .products-grid-home{grid-template-columns:1fr}
+  .pc-img{height:190px}
+  .pc-body{padding:12px 14px}
+  .pc-specs{display:none}
+
+  /* Каталог */
+  .catalog-toolbar{flex-direction:column;align-items:flex-start;gap:8px}
+  .toolbar-right{width:100%;justify-content:space-between}
+  .cat-chips{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+  .cat-chips::-webkit-scrollbar{display:none}
+  .chip{flex-shrink:0;padding:6px 12px;font-size:.8rem}
+
+  /* Шаги: 1 столбец */
+  .steps-grid{grid-template-columns:1fr;gap:12px;padding:24px 12px}
+  .step-card{padding:8px 12px}
+  .step-icon-wrap{width:50px;height:50px;font-size:1.35rem;margin-bottom:10px}
+
+  /* Item detail */
+  .item-wrap{padding:10px 12px;gap:14px}
+  .item-main-photo{height:220px}
+  .item-thumbs-row{overflow-x:auto}
+  .item-thumb{flex:0 0 64px;height:54px}
+  .booking-block{padding:14px;gap:10px}
+  .tier-box{padding:8px 6px}
+  .tier-price{font-size:.9rem}
+  .date-grid{grid-template-columns:1fr 1fr;gap:6px}
+  .ps-row{font-size:.8rem}
+  .ps-row.total{font-size:.88rem}
+
+  /* Profile */
+  .profile-wrap{padding:10px 12px;gap:12px}
+  .profile-card-top{padding:20px 14px}
+  .profile-ava{width:60px;height:60px;font-size:1.25rem}
+  .order-card-hd{flex-direction:column;align-items:flex-start;gap:6px}
+
+  /* FAQ */
+  .faq-q{font-size:.86rem;padding:12px 14px}
+  .faq-a-inner{font-size:.84rem;padding:0 14px 12px}
+
+  /* Float кнопки */
+  .float-btns{right:10px;bottom:12px;gap:7px}
+  .float-btn{width:42px;height:42px;font-size:1.05rem}
+
+  /* Карта */
+  .map-wrap{height:230px}
+  .map-info-card{gap:9px}
+  .map-info-ico{font-size:1.2rem}
+  .map-info-title{font-size:.82rem}
+  .map-info-val{font-size:.78rem}
+
+  /* Footer */
+  .footer-top{grid-template-columns:1fr;gap:16px;padding:20px 12px 16px}
+  .footer-col h4{margin-bottom:10px}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center;padding:12px 14px;font-size:.72rem}
+
+  /* Auth */
+  .auth-wrap{padding:10px}
+  .auth-right{padding:18px 14px}
+  .auth-panel{border-radius:var(--r-xl)}
+
+  /* CTA */
+  .cta-inner{padding:22px 12px}
+  .cta-title{font-size:1.1rem}
+  .cta-btns{flex-direction:column;gap:8px}
+  .cta-btns .btn{justify-content:center;width:100%}
+
+  /* Admin */
+  .stats-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-val{font-size:1.15rem}
+  .adm-content{padding:12px 10px}
+  .admin-sidebar{width:50px}
+  .admin-main{margin-left:50px}
+
+  /* Модалы */
+  .modal{padding:14px;border-radius:16px 16px 0 0}
+  .modal-hd-title{font-size:.95rem}
+  .cart-body{max-height:42vh}
+  .ci-tariff-btns{flex-wrap:wrap}
+
+  /* Секции */
+  .section{padding:24px 12px}
+  .section-title{font-size:1.1rem}
+  .section-hd{flex-direction:column;align-items:flex-start;gap:10px}
+
+  /* Корзина */
+  .ci-info{min-width:0}
+  .ci-name{font-size:.84rem}
+}
+
+/* ── 360px: очень маленький экран ── */
+@media(max-width:360px){
+  .nav-logo{gap:7px}
+  .logo-box{width:26px;height:26px;font-size:.8rem}
+  .hero h1{font-size:1.3rem}
+  .products-grid{gap:8px}
+  .float-btn{width:38px;height:38px;font-size:.95rem}
+  .float-btns{right:8px;bottom:10px}
+}
