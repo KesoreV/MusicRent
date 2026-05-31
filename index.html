@@ -65,9 +65,9 @@
       <a class="btn btn-outline btn-lg" href="#how">Как это работает</a>
     </div>
     <div class="hero-stats">
-      <div><div class="hs-val" id="heroStatEq">—</div><div class="hs-lbl">единиц оборудования</div></div>
-      <div><div class="hs-val" id="heroStatOrd">—</div><div class="hs-lbl">выполненных заказов</div></div>
-      <div><div class="hs-val" id="heroStatRating">—</div><div class="hs-lbl">средний рейтинг</div></div>
+      <div><div class="hs-val" id="heroStatEq">20+</div><div class="hs-lbl">единиц оборудования</div></div>
+      <div><div class="hs-val" id="heroStatOrd">0</div><div class="hs-lbl">выполненных заказов</div></div>
+      <div><div class="hs-val" id="heroStatRating">— ★</div><div class="hs-lbl">средний рейтинг</div></div>
     </div>
   </div>
   <div class="hero-visual">
@@ -317,33 +317,33 @@
     <div class="section-sub">Всего 4 шага — и инструмент у вас в руках</div>
   </div>
   <div class="steps-grid" id="stepsGrid">
-    <div class="step-card">
+    <div class="step-card visible" style="opacity:1;transform:none">
       <div class="step-num-badge">01</div>
       <div class="step-icon-wrap">🔍</div>
       <div class="step-num">ШАГ 1</div>
       <div class="step-title">Выберите оборудование</div>
       <div class="step-desc">Используйте фильтры и категории каталога, чтобы найти нужный инструмент</div>
     </div>
-    <div class="step-card">
+    <div class="step-card visible" style="opacity:1;transform:none">
       <div class="step-num-badge">02</div>
       <div class="step-icon-wrap">📅</div>
       <div class="step-num">ШАГ 2</div>
       <div class="step-title">Укажите даты</div>
       <div class="step-desc">Выберите период аренды — система автоматически рассчитает стоимость по тарифу</div>
     </div>
-    <div class="step-card">
+    <div class="step-card visible" style="opacity:1;transform:none">
       <div class="step-num-badge">03</div>
       <div class="step-icon-wrap">✅</div>
       <div class="step-num">ШАГ 3</div>
       <div class="step-title">Оформите заказ</div>
       <div class="step-desc">Добавьте в корзину и отправьте заявку — подтверждение придёт за 15 минут</div>
     </div>
-    <div class="step-card">
+    <div class="step-card visible" style="opacity:1;transform:none">
       <div class="step-num-badge">04</div>
       <div class="step-icon-wrap">🎸</div>
       <div class="step-num">ШАГ 4</div>
       <div class="step-title">Получите инструмент</div>
-      <div class="step-desc">Заберите в нашем пункте выдачи или закажите доставку — и выступайте!</div>
+      <div class="step-desc">Заберите в нашем пункте выдачи или закажите доступку — и выступайте!</div>
     </div>
   </div>
 </div>
@@ -353,10 +353,17 @@
   <div class="section-hd">
     <div>
       <div class="section-title">Отзывы клиентов</div>
-      <div class="section-sub" id="reviewsSubtitle">Загрузка...</div>
+      <div class="section-sub" id="reviewsSubtitle">Отзывов пока нет — будьте первым!</div>
     </div>
   </div>
-  <div id="mainReviewsGrid" class="reviews-grid"></div>
+  <div id="mainReviewsGrid" class="reviews-grid">
+    <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--text-muted)">
+      <div style="font-size:2.5rem;margin-bottom:12px">💬</div>
+      <div style="font-weight:700;margin-bottom:6px;color:var(--text)">Отзывов пока нет</div>
+      <div style="font-size:.88rem">Возьмите оборудование в аренду и оставьте первый отзыв!</div>
+      <a href="catalog.html" class="btn btn-outline btn-sm" style="margin-top:16px">Перейти в каталог</a>
+    </div>
+  </div>
 </div>
 
 <!-- CTA -->
@@ -662,17 +669,7 @@ async function syncHomeStatuses() {
 /* Фоновый sync — не ждём authReady */
 document.addEventListener('DOMContentLoaded', function() { syncHomeStatuses(); });
 
-/* ── Анимация шагов при прокрутке ── */
-(function() {
-  var cards = document.querySelectorAll('.step-card');
-  if (!cards.length) return;
-  var io = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.2 });
-  cards.forEach(function(c) { io.observe(c); });
-})();
+/* Шаги видны сразу — observer не нужен */
 
 /* ── CTA: обновляем состояние после загрузки auth ── */
 document.addEventListener('DOMContentLoaded', function() {
