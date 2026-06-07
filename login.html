@@ -12,7 +12,7 @@
   <div style="position:absolute;bottom:-150px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(129,140,248,.08) 0%,transparent 65%);border-radius:50%"></div>
 </div>
 
-<div class="auth-wrap" style="position:relative;z-index:1">
+<div class="auth-wrap" style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center">
   <div class="auth-panel">
 
     <!-- LEFT -->
@@ -64,10 +64,6 @@
           <div id="loginError" style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;padding:9px 13px;border-radius:var(--r);font-size:.83rem"></div>
           <button class="btn btn-primary" type="submit" style="width:100%;padding:12px;justify-content:center">Войти в аккаунт</button>
         </form>
-        <div class="auth-hint">
-          Демо для проверки: <strong>admin@musicrent.ru</strong> / <strong>admin123</strong><br>
-          <a href="admin.html">→ Открыть панель администратора</a>
-        </div>
         <div class="auth-switch">Нет аккаунта? <a href="#" onclick="switchTab('register')">Зарегистрироваться</a></div>
       </div>
 
