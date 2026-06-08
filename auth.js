@@ -20,6 +20,13 @@ function clearSession() { localStorage.removeItem(SESSION_KEY); }
 function isLoggedIn()   { return !!getCurrentUser(); }
 function isAdmin()      { const u = getCurrentUser(); return u && u.role === 'admin'; }
 
+/* ─── bcrypt helper ─── */
+function _bcryptAvail() { return typeof dcodeIO !== 'undefined' && dcodeIO.bcrypt || typeof bcrypt !== 'undefined'; }
+function _bc() { return typeof bcrypt !== 'undefined' ? bcrypt : dcodeIO.bcrypt; }
+async function hashPassword(plain)         { return _bcryptAvail() ? _bc().hash(plain, 10)              : plain; }
+async function verifyPassword(plain, hash) { return _bcryptAvail() ? _bc().compare(plain, hash)         : plain === hash; }
+function isHashed(s) { return typeof s === 'string' && /^\$2[ab]\$/.test(s); }
+
 /* ─── register ─── */
 async function registerUser(firstName, lastName, email, phone, password) {
   if (!firstName || !email || !password)
@@ -32,9 +39,10 @@ async function registerUser(firstName, lastName, email, phone, password) {
     if (existing)
       return { success: false, error: 'Пользователь с таким email уже зарегистрирован' };
 
+    const hashed = await hashPassword(password);
     const id = await dbAdd('users', {
       firstName, lastName: lastName || '', email,
-      phone: phone || '', password, role: 'client',
+      phone: phone || '', password: hashed, role: 'client',
       createdAt: new Date().toISOString()
     });
     const user = await dbGet('users', id);
@@ -53,9 +61,21 @@ async function loginUser(email, password) {
 
   try {
     const user = await dbFindUserByEmail(email);
-    if (!user || user.password !== password)
-      return { success: false, error: 'Неверный email или пароль' };
+    if (!user) return { success: false, error: 'Неверный email или пароль' };
 
+    let valid = false;
+    if (isHashed(user.password)) {
+      valid = await verifyPassword(password, user.password);
+    } else {
+      // Старый plain-text пароль — сравниваем и сразу апгрейдим до хэша
+      valid = user.password === password;
+      if (valid && _bcryptAvail()) {
+        const hashed = await hashPassword(password);
+        await dbUpdateUser(user.id, { password: hashed }).catch(() => {});
+      }
+    }
+
+    if (!valid) return { success: false, error: 'Неверный email или пароль' };
     setSession(user);
     return { success: true, user };
   } catch (e) {

@@ -180,6 +180,10 @@ async function dbSeedAdmin() {
   /* Выполняем только один раз за сессию браузера */
   if (sessionStorage.getItem('_sb_seeded')) return;
   try {
+    const bc = typeof bcrypt !== 'undefined' ? bcrypt : (typeof dcodeIO !== 'undefined' ? dcodeIO.bcrypt : null);
+    const hashPwd = async (p) => bc ? bc.hash(p, 10) : p;
+    const isHashed = (s) => typeof s === 'string' && /^\$2[ab]\$/.test(s);
+
     const existing = await dbFindUserByEmail('admin@musicrent.ru');
     if (!existing) {
       await getSB().from('users').insert({
@@ -187,10 +191,13 @@ async function dbSeedAdmin() {
         lastName:  '',
         email:     'admin@musicrent.ru',
         phone:     '+7 (4162) 00-00-00',
-        password:  'admin123',
+        password:  await hashPwd('admin123'),
         role:      'admin',
         createdAt: '2024-01-01T00:00:00.000Z'
       });
+    } else if (!isHashed(existing.password)) {
+      /* Апгрейд существующего plain-text пароля */
+      await getSB().from('users').update({ password: await hashPwd(existing.password) }).eq('id', existing.id);
     }
     sessionStorage.setItem('_sb_seeded', '1');
   } catch (e) {
