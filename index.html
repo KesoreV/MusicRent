@@ -591,22 +591,40 @@ document.addEventListener('DOMContentLoaded', function() {
   var eqCount = typeof PRODUCTS !== 'undefined' ? Object.keys(PRODUCTS).length : 20;
   document.getElementById('heroStatEq').textContent = eqCount + '+';
 
-  /* Заказы из кэша */
+  /* Заказы — сначала из кэша, потом обновим из Supabase */
   try {
     var cached = JSON.parse(localStorage.getItem('mr_orders_cache') || '[]');
-    var done = cached.filter(function(o){ return o.status === 'completed' || o.status === 'active'; }).length;
-    document.getElementById('heroStatOrd').textContent = done > 0 ? done + '+' : '0';
-  } catch(e) { document.getElementById('heroStatOrd').textContent = '0'; }
+    var done = cached.filter(function(o){ return o.status !== 'cancelled'; }).length;
+    document.getElementById('heroStatOrd').textContent = done > 0 ? done + '+' : '...';
+  } catch(e) { document.getElementById('heroStatOrd').textContent = '...'; }
 
   document.getElementById('heroStatRating').textContent = '— ★';
 
   /* Отзывы загружаем отдельно в фоне */
   loadHomeReviews();
+  /* Заказы уточняем из Supabase в фоне */
+  loadHomeOrders();
 });
+
+async function loadHomeOrders() {
+  try {
+    const orders = await dbGetAll('orders').catch(() => []);
+    if (!orders.length) return;
+    const count = orders.filter(function(o){ return o.status !== 'cancelled'; }).length;
+    document.getElementById('heroStatOrd').textContent = count > 0 ? count + '+' : '0';
+  } catch(e) {}
+}
 
 async function loadHomeReviews() {
   try {
     const reviews = await dbGetAll('reviews').catch(() => []);
+
+    /* Обновляем средний рейтинг */
+    if (reviews.length) {
+      const avg = reviews.reduce(function(s, r){ return s + (r.stars || 5); }, 0) / reviews.length;
+      document.getElementById('heroStatRating').textContent = avg.toFixed(1) + ' ★';
+    }
+
     const grid    = document.getElementById('mainReviewsGrid');
     const subtitle = document.getElementById('reviewsSubtitle');
     if (!reviews.length) {
